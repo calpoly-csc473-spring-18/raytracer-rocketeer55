@@ -7,21 +7,21 @@
 vec3 Parse::Vector(std::stringstream & Stream)
 {
 	vec3 v;
-v.x = v.y = v.z = 0.f;
-std::stringbuf buf;
+	v.x = v.y = v.z = 0.f;
+	std::stringbuf buf;
 
-Stream.ignore(1, '<');
-Stream.get(buf, '>');
-Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+	Stream.ignore(1, '<');
+	Stream.get(buf, '>');
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
 
-std::string line = buf.str();
-int read = sscanf(line.c_str(), "%f, %f, %f", &v.x, &v.y, &v.z);
+	std::string line = buf.str();
+	int read = sscanf(line.c_str(), "%f, %f, %f", &v.x, &v.y, &v.z);
 
-if (read != 3) {
-	std::cerr << "Expected to read 3 vector elements but found '" << line << "'" << std::endl;
-}
+	if (read != 3) {
+		std::cerr << "Expected to read 3 vector elements but found '" << line << "'" << std::endl;
+	}
 
-return v;
+	return v;
 }
 
 vec4 Parse::Vector4(std::stringstream & Stream)
@@ -42,6 +42,92 @@ vec4 Parse::Vector4(std::stringstream & Stream)
 	}
 
 	return v;
+}
+
+Pigment Parse::load_pigment(std::stringstream & Stream)
+{
+	Pigment pigment;
+
+	pigment.colortype = -1;
+	std::string temp;
+
+	Stream >> temp;
+
+	if (temp.compare("color") != 0) {
+		std::cerr << "Unexpected pigment type '" << temp << "'" << std::endl;
+	}
+
+	Stream >> temp;
+	if (temp.compare("rgb") == 0) {
+		// color is rgb
+
+		pigment.colortype = Globals::COLOR_RGB;
+
+		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+		Stream.unget();
+
+		pigment.color.rgb = Parse::Vector(Stream);
+	}
+	else if (temp.compare("rgbf") == 0) {
+		// color is rgbf
+
+		pigment.colortype = Globals::COLOR_RGBF;
+
+		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+		Stream.unget();
+
+		pigment.color.rgbf = Parse::Vector4(Stream);
+	}
+	else {
+		std::cerr << "Unexpected color type '" << temp << "'" << std::endl;
+	}
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '}');
+	return pigment;
+}
+
+Finish Parse::load_finish(std::stringstream & Stream)
+{
+	Finish finish;
+	finish.ambient = finish.diffuse = 0.f;
+	std::string temp;
+	std::stringbuf buf;
+	std::stringstream newstream;
+
+	Stream.get(buf, '}');
+	newstream << buf.str();
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '}');
+
+	while (newstream >> temp) {
+
+		if (temp.compare("ambient") == 0) {
+			// AMBIENT!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.ambient));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("diffuse") == 0) {
+			// DIFFUSE!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.diffuse));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else {
+			std::cerr << "Expected either 'ambient' or 'diffuse' but found '" << temp << "'" << std::endl;
+		}
+	}
+
+	return finish;
 }
 
 Camera* Parse::load_cam(std::stringstream & Stream)
@@ -100,33 +186,8 @@ Light* Parse::load_light(std::stringstream &Stream)
 
 	light->location = Parse::Vector(Stream);
 
-	Stream >> temp;
-	Stream >> temp;
-	if (temp.compare("rgb") == 0) {
-		// color is rgb
-		
-		light->colortype = Globals::COLOR_RGB;
+	light->pigment = Parse::load_pigment(Stream);
 
-		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
-		Stream.unget();
-
-		light->color.rgb = Parse::Vector(Stream);
-	}
-	else if (temp.compare("rgbf") == 0) {
-		// color is rgbf
-
-		light->colortype = Globals::COLOR_RGBF;
-
-		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
-		Stream.unget();
-
-		light->color.rgbf = Parse::Vector4(Stream);
-	}
-	else {
-		std::cerr << "Unexpected color type '" << temp << "'" << std::endl;
-	}
-
-	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '}');
 	return light;
 }
 
@@ -138,10 +199,14 @@ Sphere* Parse::load_sphere(std::stringstream & Stream)
 
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
 
+	// Center!
+
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
 	Stream.unget();
 
 	sphere->center = Parse::Vector(Stream);
+
+	// Radius!
 
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), ',');
 	Stream.get(buf);
@@ -154,41 +219,46 @@ Sphere* Parse::load_sphere(std::stringstream & Stream)
 	}
 
 	Stream >> temp;
-	// PIGMENT!
+	while (temp.compare("}") != 0) {
 
-	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+		if (temp.compare("pigment") == 0) {
+			// PIGMENT!
 
-	Stream >> temp;
-	Stream >> temp;
-	if (temp.compare("rgb") == 0) {
-		// color is rgb
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
 
-		sphere->colortype = Globals::COLOR_RGB;
+			sphere->pigment = Parse::load_pigment(Stream);
+		}
+		else if (temp.compare("finish") == 0) {
+			// FINISH!
 
-		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
-		Stream.unget();
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
 
-		sphere->color.rgb = Parse::Vector(Stream);
+			sphere->finish = Parse::load_finish(Stream);
+		}
+		else if (temp.compare("translate") == 0) {
+			// TRANSLATE!
+
+			// Not yet implemented
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+		}
+		else if (temp.compare("scale") == 0) {
+			// SCALE!
+
+			// Not yet implemented
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+		}
+		else if (temp.compare("rotate") == 0) {
+			// ROTATE!
+
+			// Not yet implemented
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+		}
+		else {
+			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;
+		}
+
+		Stream >> temp;
 	}
-	else if (temp.compare("rgbf") == 0) {
-		// color is rgbf
-
-		sphere->colortype = Globals::COLOR_RGBF;
-
-		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
-		Stream.unget();
-
-		sphere->color.rgbf = Parse::Vector4(Stream);
-	}
-	else {
-		std::cerr << "Unexpected color type '" << temp << "'" << std::endl;
-	}
-
-	Stream >> temp;
-	// FINISH! (Not yet implemented)
-
-	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '}');
-
 	return sphere;
 }
 
@@ -200,10 +270,14 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
 
+	// Normal!
+
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
 	Stream.unget();
 
 	plane->normal = Parse::Vector(Stream);
+
+	// Distance!
 
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), ',');
 	Stream.get(buf);
@@ -216,40 +290,27 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 	}
 
 	Stream >> temp;
-	// PIGMENT!
+	while (temp.compare("}") != 0) {
 
-	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+		if (temp.compare("pigment") == 0) {
+			// PIGMENT!
 
-	Stream >> temp;
-	Stream >> temp;
-	if (temp.compare("rgb") == 0) {
-		// color is rgb
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
 
-		plane->colortype = Globals::COLOR_RGB;
+			plane->pigment = Parse::load_pigment(Stream);
+		}
+		else if (temp.compare("finish") == 0) {
+			// FINISH!
 
-		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
-		Stream.unget();
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
 
-		plane->color.rgb = Parse::Vector(Stream);
+			plane->finish = Parse::load_finish(Stream);
+		}
+		else {
+			std::cerr << "Expected either 'pigment' or 'finish' but found '" << temp << "'" << std::endl;
+		}
+
+		Stream >> temp;
 	}
-	else if (temp.compare("rgbf") == 0) {
-		// color is rgbf
-
-		plane->colortype = Globals::COLOR_RGBF;
-
-		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
-		Stream.unget();
-
-		plane->color.rgbf = Parse::Vector4(Stream);
-	}
-	else {
-		std::cerr << "Unexpected color type '" << temp << "'" << std::endl;
-	}
-
-	Stream >> temp;
-	// FINISH! (Not yet implemented)
-
-	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '}');
-
 	return plane;
 }

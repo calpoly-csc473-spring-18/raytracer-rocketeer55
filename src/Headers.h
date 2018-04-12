@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include <iomanip>
 #include "Globals.h"
 #include "Parse.h"
 

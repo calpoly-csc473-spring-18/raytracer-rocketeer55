@@ -18,6 +18,15 @@ namespace Objects {
 		vec4 rgbf;
 	};
 
+	struct Pigment {
+		Color color;
+		int colortype;
+	};
+
+	struct Finish {
+		float ambient, diffuse;
+	};
+
 	class Object {
 	public:
 		virtual std::string type() = 0;
@@ -33,8 +42,7 @@ namespace Objects {
 	class Light : Object {
 	public:
 		vec3 location;
-		Color color;
-		int colortype;
+		Pigment pigment;
 
 		std::string type();
 	};
@@ -43,8 +51,8 @@ namespace Objects {
 	public:
 		vec3 center;
 		float radius;
-		Color color;
-		int colortype;
+		Pigment pigment;
+		Finish finish;
 
 		std::string type();
 	};
@@ -53,8 +61,8 @@ namespace Objects {
 	public:
 		vec3 normal;
 		float distance;
-		Color color;
-		int colortype;
+		Pigment pigment;
+		Finish finish;
 
 		std::string type();
 	};

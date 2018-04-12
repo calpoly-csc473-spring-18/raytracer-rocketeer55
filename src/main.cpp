@@ -59,7 +59,7 @@ int parseArgs(int &argc, char *argv[]) {
 }
 
 int openFile() {
-	std::ifstream infile("..\\resources\\" + filename);
+	std::ifstream infile(filename);
 
 	if (infile) {
 		buffer << infile.rdbuf();
@@ -111,6 +111,11 @@ int parseFile() {
 
 void printSceneInfo()
 {
+	// Setup cout
+
+	std::cout << std::setiosflags(std::ios::fixed);
+	std::cout << std::setprecision(4);
+
 	// Print Camera
 
 	std::cout << "Camera:" << std::endl;
@@ -128,11 +133,11 @@ void printSceneInfo()
 	{
 		std::cout << "\nLight[" << i << "]:" << std::endl;
 		std::cout << "- Location: {" << l->location.x << " " << l->location.y << " " << l->location.z << "}" << std::endl;
-		if (l->colortype == COLOR_RGB) {
-			std::cout << "- Color: {" << l->color.rgb.x << " " << l->color.rgb.y << " " << l->color.rgb.z << "}" << std::endl;
+		if (l->pigment.colortype == COLOR_RGB) {
+			std::cout << "- Color: {" << l->pigment.color.rgb.x << " " << l->pigment.color.rgb.y << " " << l->pigment.color.rgb.z << "}" << std::endl;
 		}
 		else {
-			std::cout << "- Color: {" << l->color.rgbf.x << " " << l->color.rgbf.y << " " << l->color.rgbf.z << " " << l->color.rgbf.a << "}" << std::endl;
+			std::cout << "- Color: {" << l->pigment.color.rgbf.x << " " << l->pigment.color.rgbf.y << " " << l->pigment.color.rgbf.z << " " << l->pigment.color.rgbf.a << "}" << std::endl;
 		}
 
 		i++;
@@ -146,19 +151,21 @@ void printSceneInfo()
 	for each (Object *o in objects)
 	{
 		std::cout << "\nObject[" << i << "]:" << std::endl;
-		std::cout << o->type() << std::endl;
 		if (o->type().compare("Sphere") == 0) {
 			// is a sphere!
 			Sphere* s = dynamic_cast<Sphere*>(o);
 			std::cout << "- Type: Sphere" << std::endl;
 			std::cout << "- Center: {" << s->center.x << " " << s->center.y << " " << s->center.z << "}" << std::endl;
 			std::cout << "- Radius: " << s->radius << std::endl;
-			if (s->colortype == COLOR_RGB) {
-				std::cout << "- Color: {" << s->color.rgb.x << " " << s->color.rgb.y << " " << s->color.rgb.z << "}" << std::endl;
+			if (s->pigment.colortype == COLOR_RGB) {
+				std::cout << "- Color: {" << s->pigment.color.rgb.x << " " << s->pigment.color.rgb.y << " " << s->pigment.color.rgb.z << "}" << std::endl;
 			}
 			else {
-				std::cout << "- Color: {" << s->color.rgbf.x << " " << s->color.rgbf.y << " " << s->color.rgbf.z << " " << s->color.rgbf.a << "}" << std::endl;
+				std::cout << "- Color: {" << s->pigment.color.rgbf.x << " " << s->pigment.color.rgbf.y << " " << s->pigment.color.rgbf.z << " " << s->pigment.color.rgbf.a << "}" << std::endl;
 			}
+			std::cout << "- Material: " << std::endl;
+			std::cout << "  - Ambient: " << s->finish.ambient << std::endl;
+			std::cout << "  - Diffuse: " << s->finish.diffuse << std::endl;
 		}
 		else if (o->type().compare("Plane") == 0) {
 			// is a plane!
@@ -167,12 +174,15 @@ void printSceneInfo()
 			std::cout << "- Type: Plane" << std::endl;
 			std::cout << "- Normal: {" << p->normal.x << " " << p->normal.y << " " << p->normal.z << "}" << std::endl;
 			std::cout << "- Distance: " << p->distance << std::endl;
-			if (p->colortype == COLOR_RGB) {
-				std::cout << "- Color: {" << p->color.rgb.x << " " << p->color.rgb.y << " " << p->color.rgb.z << "}" << std::endl;
+			if (p->pigment.colortype == COLOR_RGB) {
+				std::cout << "- Color: {" << p->pigment.color.rgb.x << " " << p->pigment.color.rgb.y << " " << p->pigment.color.rgb.z << "}" << std::endl;
 			}
 			else {
-				std::cout << "- Color: {" << p->color.rgbf.x << " " << p->color.rgbf.y << " " << p->color.rgbf.z << " " << p->color.rgbf.a << "}" << std::endl;
+				std::cout << "- Color: {" << p->pigment.color.rgbf.x << " " << p->pigment.color.rgbf.y << " " << p->pigment.color.rgbf.z << " " << p->pigment.color.rgbf.a << "}" << std::endl;
 			}
+			std::cout << "- Material: " << std::endl;
+			std::cout << "  - Ambient: " << p->finish.ambient << std::endl;
+			std::cout << "  - Diffuse: " << p->finish.diffuse << std::endl;
 		}
 
 		i++;
@@ -187,6 +197,7 @@ int main(int argc, char * argv[]) {
 
 	if (openFile()) {
 		std::cerr << "File \"" << filename << "\" could not be read" << std::endl;
+		return EXIT_FAILURE;
 	}
 
 	parseFile();
