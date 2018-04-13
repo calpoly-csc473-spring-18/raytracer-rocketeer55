@@ -21,6 +21,8 @@ namespace Objects {
 	struct Pigment {
 		Color color;
 		int colortype;
+
+		void print();
 	};
 
 	struct Finish {
@@ -34,6 +36,7 @@ namespace Objects {
 
 		virtual std::string type() = 0;
 		virtual void print() = 0;
+		virtual float getFirstCollision(struct Ray* ray) = 0;
 	};
 
 	class Camera {
@@ -60,6 +63,7 @@ namespace Objects {
 
 		std::string type();
 		void print();
+		float getFirstCollision(Ray* ray);
 	};
 
 	class Plane : public Object {
@@ -69,13 +73,16 @@ namespace Objects {
 
 		std::string type();
 		void print();
+		float getFirstCollision(Ray* ray);
 	};
 
 	struct Ray {
 		vec3 d, origin;
+		int x, y, width, height;
 
 		Ray();
 		Ray(int x, int y, int width, int height, Camera* camera);
+		void print();
 	};
 }
 

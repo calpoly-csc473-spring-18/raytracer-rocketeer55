@@ -149,11 +149,34 @@ void printSceneInfo()
 void printPixelRay() {
 	Ray* ray = new Ray(x, y, width, height, camera);
 
-	std::cout << "Pixel: [" << x << ", " << y << "] Ray: {";
-	std::cout << std::setiosflags(std::ios::fixed);
-	std::cout << std::setprecision(4);
-	std::cout << ray->origin.x << " " << ray->origin.y << " " << ray->origin.z << "} -> {";
-	std::cout << ray->d.x << " " << ray->d.y << " " << ray->d.z << "}" << std::endl;
+	ray->print();
+}
+
+void printFirstHit() {
+	Ray* ray = new Ray(x, y, width, height, camera);
+	Object* nearest;
+	float t, nearest_t = -1;
+
+	ray->print();
+
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		Object* o = objects[i];
+		t = o->getFirstCollision(ray);
+		if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
+			nearest_t = t;
+			nearest = o;
+		}
+	}
+
+	if (nearest_t == -1) {
+		std::cout << "No Hit" << std::endl;
+	}
+	else {
+		std::cout << "T = " << nearest_t << std::endl;
+		std::cout << "Object Type: " << nearest->type() << std::endl;
+		std::cout << "Color: ";
+		nearest->pigment.print();
+	}
 }
 
 
@@ -174,6 +197,9 @@ int main(int argc, char * argv[]) {
 	}
 	else if (mode == PIXEL_RAY) {
 		printPixelRay();
+	}
+	else if (mode == FIRST_HIT) {
+		printFirstHit();
 	}
 
 	return EXIT_SUCCESS;
