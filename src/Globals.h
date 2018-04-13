@@ -12,6 +12,7 @@ namespace Globals
 	static const int COLOR_RGBF = 1;
 
 	static std::string filename;
+	static const std::string outfilename = "output.png";
 }
 
 #endif

@@ -179,6 +179,42 @@ void printFirstHit() {
 	}
 }
 
+void raycast() {
+	Ray* ray;
+	Image* image = new Image(width, height);
+
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			ray = new Ray(i, j, width, height, camera);
+
+			Object* nearest = NULL;
+			float t = 0, nearest_t = -1;
+
+			for (unsigned int i = 0; i < objects.size(); i++) {
+				Object* o = objects[i];
+				t = o->getFirstCollision(ray);
+				if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
+					nearest_t = t;
+					nearest = o;
+				}
+			}
+
+			if (nearest_t == -1) {
+				image->setPixel(i, j, 0, 0, 0);
+			}
+			else {
+				unsigned int red = (unsigned int)std::round(nearest->pigment.color.rgb.x * 255.f);
+				unsigned int green = (unsigned int)std::round(nearest->pigment.color.rgb.y * 255.f);
+				unsigned int blue = (unsigned int)std::round(nearest->pigment.color.rgb.z * 255.f);
+
+				image->setPixel(i, j, red, green, blue);
+			}
+		}
+	}
+
+	image->writeToFile(outfilename);
+}
+
 
 int main(int argc, char * argv[]) {
 	if (parseArgs(argc, argv)) {
@@ -200,6 +236,9 @@ int main(int argc, char * argv[]) {
 	}
 	else if (mode == FIRST_HIT) {
 		printFirstHit();
+	}
+	else {
+		raycast();
 	}
 
 	return EXIT_SUCCESS;
