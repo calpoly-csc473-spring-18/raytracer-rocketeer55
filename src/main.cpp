@@ -130,9 +130,8 @@ void printSceneInfo()
 
 	std::cout << "\n---\n\n" << lights.size() << " light(s)" << std::endl;
 
-	int i = 0;
-	for each (Light* l in lights)
-	{
+	for (unsigned int i = 0; i < lights.size(); i++) {
+		Light* l = lights[i];
 		std::cout << "\nLight[" << i << "]:" << std::endl;
 		std::cout << "- Location: {" << l->location.x << " " << l->location.y << " " << l->location.z << "}" << std::endl;
 		if (l->pigment.colortype == COLOR_RGB) {
@@ -141,17 +140,15 @@ void printSceneInfo()
 		else {
 			std::cout << "- Color: {" << l->pigment.color.rgbf.x << " " << l->pigment.color.rgbf.y << " " << l->pigment.color.rgbf.z << " " << l->pigment.color.rgbf.a << "}" << std::endl;
 		}
-
-		i++;
 	}
 
 	// Print Objects
 
 	std::cout << "\n---\n\n" << objects.size() << " object(s)" << std::endl;
 
-	i = 0;
-	for each (Object *o in objects)
-	{
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		Object* o = objects[i];
+
 		std::cout << "\nObject[" << i << "]:" << std::endl;
 		if (o->type().compare("Sphere") == 0) {
 			// is a sphere!
@@ -186,8 +183,6 @@ void printSceneInfo()
 			std::cout << "  - Ambient: " << p->finish.ambient << std::endl;
 			std::cout << "  - Diffuse: " << p->finish.diffuse << std::endl;
 		}
-
-		i++;
 	}
 }
 

@@ -29,17 +29,20 @@ namespace Objects {
 
 	class Object {
 	public:
+		Pigment pigment;
+		Finish finish;
+
 		virtual std::string type() = 0;
 	};
 
-	class Camera : public Object {
+	class Camera {
 	public:
 		vec3 location, up, right, look_at;
 		
 		virtual std::string type();
 	};
 
-	class Light : Object {
+	class Light {
 	public:
 		vec3 location;
 		Pigment pigment;
@@ -51,8 +54,6 @@ namespace Objects {
 	public:
 		vec3 center;
 		float radius;
-		Pigment pigment;
-		Finish finish;
 
 		std::string type();
 	};
@@ -61,8 +62,6 @@ namespace Objects {
 	public:
 		vec3 normal;
 		float distance;
-		Pigment pigment;
-		Finish finish;
 
 		std::string type();
 	};
@@ -73,6 +72,6 @@ namespace Objects {
 		Ray();
 		Ray(int x, int y, int width, int height, Camera* camera);
 	};
-};
+}
 
 #endif
