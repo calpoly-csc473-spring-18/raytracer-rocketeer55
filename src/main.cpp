@@ -120,11 +120,7 @@ void printSceneInfo()
 
 	// Print Camera
 
-	std::cout << "Camera:" << std::endl;
-	std::cout << "- Location: {" << camera->location.x << " " << camera->location.y << " " << camera->location.z << "}" << std::endl;
-	std::cout << "- Up: {" << camera->up.x << " " << camera->up.y << " " << camera->up.z << "}" << std::endl;
-	std::cout << "- Right: {" << camera->right.x << " " << camera->right.y << " " << camera->right.z << "}" << std::endl;
-	std::cout << "- Look at: {" << camera->look_at.x << " " << camera->look_at.y << " " << camera->look_at.z << "}" << std::endl;
+	camera->print();
 
 	// Print Light Sources
 
@@ -133,13 +129,8 @@ void printSceneInfo()
 	for (unsigned int i = 0; i < lights.size(); i++) {
 		Light* l = lights[i];
 		std::cout << "\nLight[" << i << "]:" << std::endl;
-		std::cout << "- Location: {" << l->location.x << " " << l->location.y << " " << l->location.z << "}" << std::endl;
-		if (l->pigment.colortype == COLOR_RGB) {
-			std::cout << "- Color: {" << l->pigment.color.rgb.x << " " << l->pigment.color.rgb.y << " " << l->pigment.color.rgb.z << "}" << std::endl;
-		}
-		else {
-			std::cout << "- Color: {" << l->pigment.color.rgbf.x << " " << l->pigment.color.rgbf.y << " " << l->pigment.color.rgbf.z << " " << l->pigment.color.rgbf.a << "}" << std::endl;
-		}
+		
+		l->print();
 	}
 
 	// Print Objects
@@ -150,39 +141,8 @@ void printSceneInfo()
 		Object* o = objects[i];
 
 		std::cout << "\nObject[" << i << "]:" << std::endl;
-		if (o->type().compare("Sphere") == 0) {
-			// is a sphere!
-			Sphere* s = dynamic_cast<Sphere*>(o);
-			std::cout << "- Type: Sphere" << std::endl;
-			std::cout << "- Center: {" << s->center.x << " " << s->center.y << " " << s->center.z << "}" << std::endl;
-			std::cout << "- Radius: " << s->radius << std::endl;
-			if (s->pigment.colortype == COLOR_RGB) {
-				std::cout << "- Color: {" << s->pigment.color.rgb.x << " " << s->pigment.color.rgb.y << " " << s->pigment.color.rgb.z << "}" << std::endl;
-			}
-			else {
-				std::cout << "- Color: {" << s->pigment.color.rgbf.x << " " << s->pigment.color.rgbf.y << " " << s->pigment.color.rgbf.z << " " << s->pigment.color.rgbf.a << "}" << std::endl;
-			}
-			std::cout << "- Material: " << std::endl;
-			std::cout << "  - Ambient: " << s->finish.ambient << std::endl;
-			std::cout << "  - Diffuse: " << s->finish.diffuse << std::endl;
-		}
-		else if (o->type().compare("Plane") == 0) {
-			// is a plane!
-
-			Plane* p = dynamic_cast<Plane*>(o);
-			std::cout << "- Type: Plane" << std::endl;
-			std::cout << "- Normal: {" << p->normal.x << " " << p->normal.y << " " << p->normal.z << "}" << std::endl;
-			std::cout << "- Distance: " << p->distance << std::endl;
-			if (p->pigment.colortype == COLOR_RGB) {
-				std::cout << "- Color: {" << p->pigment.color.rgb.x << " " << p->pigment.color.rgb.y << " " << p->pigment.color.rgb.z << "}" << std::endl;
-			}
-			else {
-				std::cout << "- Color: {" << p->pigment.color.rgbf.x << " " << p->pigment.color.rgbf.y << " " << p->pigment.color.rgbf.z << " " << p->pigment.color.rgbf.a << "}" << std::endl;
-			}
-			std::cout << "- Material: " << std::endl;
-			std::cout << "  - Ambient: " << p->finish.ambient << std::endl;
-			std::cout << "  - Diffuse: " << p->finish.diffuse << std::endl;
-		}
+		
+		o->print();
 	}
 }
 

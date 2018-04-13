@@ -23,6 +23,54 @@ std::string Plane::type() {
 	return "Plane";
 }
 
+void Camera::print() {
+	std::cout << "Camera:" << std::endl;
+	std::cout << "- Location: {" << location.x << " " << location.y << " " << location.z << "}" << std::endl;
+	std::cout << "- Up: {" << up.x << " " << up.y << " " << up.z << "}" << std::endl;
+	std::cout << "- Right: {" << right.x << " " << right.y << " " << right.z << "}" << std::endl;
+	std::cout << "- Look at: {" << look_at.x << " " << look_at.y << " " << look_at.z << "}" << std::endl;
+}
+
+void Light::print() {
+	std::cout << "- Location: {" << location.x << " " << location.y << " " << location.z << "}" << std::endl;
+	if (pigment.colortype == Globals::COLOR_RGB) {
+		std::cout << "- Color: {" << pigment.color.rgb.x << " " << pigment.color.rgb.y << " " << pigment.color.rgb.z << "}" << std::endl;
+	}
+	else {
+		std::cout << "- Color: {" << pigment.color.rgbf.x << " " << pigment.color.rgbf.y << " " << pigment.color.rgbf.z << " " << pigment.color.rgbf.a << "}" << std::endl;
+	}
+}
+
+void Sphere::print() {
+	std::cout << "- Type: Sphere" << std::endl;
+	std::cout << "- Center: {" << center.x << " " << center.y << " " << center.z << "}" << std::endl;
+	std::cout << "- Radius: " << radius << std::endl;
+	if (pigment.colortype == Globals::COLOR_RGB) {
+		std::cout << "- Color: {" << pigment.color.rgb.x << " " << pigment.color.rgb.y << " " << pigment.color.rgb.z << "}" << std::endl;
+	}
+	else {
+		std::cout << "- Color: {" << pigment.color.rgbf.x << " " << pigment.color.rgbf.y << " " << pigment.color.rgbf.z << " " << pigment.color.rgbf.a << "}" << std::endl;
+	}
+	std::cout << "- Material: " << std::endl;
+	std::cout << "  - Ambient: " << finish.ambient << std::endl;
+	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
+}
+
+void Plane::print() {
+	std::cout << "- Type: Plane" << std::endl;
+	std::cout << "- Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << std::endl;
+	std::cout << "- Distance: " << distance << std::endl;
+	if (pigment.colortype == Globals::COLOR_RGB) {
+		std::cout << "- Color: {" << pigment.color.rgb.x << " " << pigment.color.rgb.y << " " << pigment.color.rgb.z << "}" << std::endl;
+	}
+	else {
+		std::cout << "- Color: {" << pigment.color.rgbf.x << " " << pigment.color.rgbf.y << " " << pigment.color.rgbf.z << " " << pigment.color.rgbf.a << "}" << std::endl;
+	}
+	std::cout << "- Material: " << std::endl;
+	std::cout << "  - Ambient: " << finish.ambient << std::endl;
+	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
+}
+
 Ray::Ray() {
 	d.x = d.y = d.z = 0.f;
 	origin.x = origin.y = origin.z = 0.f;
