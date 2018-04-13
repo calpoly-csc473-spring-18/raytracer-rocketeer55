@@ -10,5 +10,7 @@
 #include <iomanip>
 #include "Globals.h"
 #include "Parse.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #endif

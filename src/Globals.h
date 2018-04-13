@@ -11,8 +11,6 @@ namespace Globals
 	static const int COLOR_RGB = 0;
 	static const int COLOR_RGBF = 1;
 
-	static int width, height, x, y, mode;
-
 	static std::string filename;
 }
 

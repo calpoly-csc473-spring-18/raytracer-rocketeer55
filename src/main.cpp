@@ -8,6 +8,8 @@ Camera* camera;
 std::vector<Light*> lights;
 std::vector<Object*> objects;
 
+int x, y, width, height, mode;
+
 int parseArgs(int &argc, char *argv[]) {
 	if (argc < 3) {
 		return 1;
@@ -189,6 +191,16 @@ void printSceneInfo()
 	}
 }
 
+void printPixelRay() {
+	Ray* ray = new Ray(x, y, width, height, camera);
+
+	std::cout << "Pixel: [" << x << ", " << y << "] Ray: {";
+	std::cout << std::setiosflags(std::ios::fixed);
+	std::cout << std::setprecision(4);
+	std::cout << ray->origin.x << " " << ray->origin.y << " " << ray->origin.z << "} -> {";
+	std::cout << ray->d.x << " " << ray->d.y << " " << ray->d.z << "}" << std::endl;
+}
+
 
 int main(int argc, char * argv[]) {
 	if (parseArgs(argc, argv)) {
@@ -204,6 +216,9 @@ int main(int argc, char * argv[]) {
 
 	if (mode == SCENE_INFO) {
 		printSceneInfo();
+	}
+	else if (mode == PIXEL_RAY) {
+		printPixelRay();
 	}
 
 	return EXIT_SUCCESS;

@@ -66,6 +66,13 @@ namespace Objects {
 
 		std::string type();
 	};
+
+	struct Ray {
+		vec3 d, origin;
+
+		Ray();
+		Ray(int x, int y, int width, int height, Camera* camera);
+	};
 };
 
 #endif
