@@ -2,7 +2,13 @@
 #define PARSE_H
 
 #include <string>
-#include "Objects.h"
+#include "Vector.h"
+#include "Pigment.h"
+#include "Finish.h"
+#include "Camera.h"
+#include "Light.h"
+#include "Sphere.h"
+#include "Plane.h"
 
 using namespace Objects;
 

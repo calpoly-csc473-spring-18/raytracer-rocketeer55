@@ -27,7 +27,7 @@ vec3 Parse::Vector(std::stringstream & Stream)
 vec4 Parse::Vector4(std::stringstream & Stream)
 {
 	vec4 v;
-	v.x = v.y = v.z = v.a = 0.f;
+	v.x = v.y = v.z = v.w = 0.f;
 	std::stringbuf buf;
 
 	Stream.ignore(1, '<');
@@ -35,7 +35,7 @@ vec4 Parse::Vector4(std::stringstream & Stream)
 	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
 
 	std::string line = buf.str();
-	int read = sscanf(line.c_str(), "%f, %f, %f, %f", &v.x, &v.y, &v.z, &v.a);
+	int read = sscanf(line.c_str(), "%f, %f, %f, %f", &v.x, &v.y, &v.z, &v.w);
 
 	if (read != 4) {
 		std::cerr << "Expected to read 4 vector elements but found '" << line << "'" << std::endl;

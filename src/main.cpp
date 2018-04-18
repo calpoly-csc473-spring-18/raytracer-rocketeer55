@@ -1,6 +1,7 @@
 #include "Headers.h"
 
 using namespace Globals;
+using namespace Objects;
 
 std::stringstream buffer;
 Camera* camera;

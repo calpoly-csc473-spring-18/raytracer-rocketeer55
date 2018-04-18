@@ -14,4 +14,15 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "Image.h"
 
+#include "Vector.h"
+#include "Pigment.h"
+#include "Finish.h"
+
+#include "Object.h"
+#include "Camera.h"
+#include "Light.h"
+#include "Sphere.h"
+#include "Plane.h"
+#include "Ray.h"
+
 #endif
