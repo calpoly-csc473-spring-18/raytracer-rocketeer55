@@ -3,7 +3,7 @@
 
 namespace Objects {
 	struct Finish {
-		float ambient, diffuse;
+		float ambient, diffuse, specular, roughness, reflection, refraction, metallic, ior;
 
 		Finish();
 		Finish(float _ambient, float _diffuse);

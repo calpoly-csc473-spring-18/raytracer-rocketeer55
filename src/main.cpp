@@ -18,17 +18,11 @@ int parseArgs(int &argc, char *argv[]) {
 
 	std::string input = argv[1];
 
-	if (input.compare("raycast") == 0) {
-		mode = RAYCAST;
+	if (input.compare("render") == 0) {
+		mode = RENDER;
 	}
-	else if (input.compare("sceneinfo") == 0) {
-		mode = SCENE_INFO;
-	}
-	else if (input.compare("pixelray") == 0) {
-		mode = PIXEL_RAY;
-	}
-	else if (input.compare("firsthit") == 0) {
-		mode = FIRST_HIT;
+	else if (input.compare("pixelcolor") == 0) {
+		mode = PIXEL_COLOR;
 	}
 	else {
 		return 1;
@@ -36,20 +30,15 @@ int parseArgs(int &argc, char *argv[]) {
 
 	filename = argv[2];
 
-	if (mode == RAYCAST) {
-		if (argc != 5) {
+	if (mode == RENDER) {
+		if (argc < 5) {
 			return 1;
 		}
 		width = atoi(argv[3]);
 		height = atoi(argv[4]);
 	}
-	else if (mode == SCENE_INFO) {
-		if (argc != 3) {
-			return 1;
-		}
-	}
-	else if (mode == PIXEL_RAY || mode == FIRST_HIT) {
-		if (argc != 7) {
+	else if (mode == PIXEL_COLOR) {
+		if (argc < 7) {
 			return 1;
 		}
 		width = atoi(argv[3]);
@@ -216,6 +205,149 @@ void raycast() {
 	image->writeToFile(outfilename);
 }
 
+void renderScene() {
+	Ray *ray;
+	Image* image = new Image(width, height);
+	vec3 color;
+
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			ray = new Ray(i, j, width, height, camera);
+
+			Object* nearest = NULL;
+			float t = 0, nearest_t = -1;
+
+			for (unsigned int i = 0; i < objects.size(); i++) {
+				Object* o = objects[i];
+				t = o->getFirstCollision(ray);
+				if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
+					nearest_t = t;
+					nearest = o;
+				}
+			}
+
+			if (nearest == NULL) {
+				// Ray doesn't collide with an object
+				image->setPixel(i, j, 0, 0, 0);
+				color = vec3();
+			}
+
+			else {
+				vec3 pos = vec3(ray->origin.x + nearest_t * ray->d.x, ray->origin.y + nearest_t * ray->d.y, ray->origin.z + nearest_t * ray->d.z);
+
+				color = vec3();
+
+				color.x += nearest->finish.ambient * nearest->pigment.color.rgb.x;
+				color.y += nearest->finish.ambient * nearest->pigment.color.rgb.y;
+				color.z += nearest->finish.ambient * nearest->pigment.color.rgb.z;
+
+				// Check if in shadow
+				for (unsigned int k = 0; k < lights.size(); k++) {
+					Ray *light = new Ray(pos, lights[k]->location);
+
+					// adjust origin of light to avoid SHADOW ACNE!
+					light->origin.x = pos.x + light->d.x * EPSILON;
+					light->origin.y = pos.y + light->d.y * EPSILON;
+					light->origin.z = pos.z + light->d.z * EPSILON;
+
+					Object* shadow_nearest = NULL;
+					float shadow_t = 0, shadow_nearest_t = vec3::getDistance(light->origin, lights[k]->location);
+
+					for (unsigned int shadow_i = 0; shadow_i < objects.size(); shadow_i++) {
+						Object* o = objects[shadow_i];
+						shadow_t = o->getFirstCollision(light);
+						if (shadow_t != -1 && (shadow_t < shadow_nearest_t)) {
+							shadow_nearest_t = shadow_t;
+							shadow_nearest = o;
+						}
+					}
+
+					if (shadow_nearest == NULL) {
+						// No shadow here! Calculate BLINN_PHONG lighting
+
+						if (nearest->pigment.colortype == COLOR_RGBF) {
+							std::cerr << "Color type RGBF - Not yet implemented" << std::endl;
+						}
+						
+						vec3 Kd = vec3(nearest->finish.diffuse * nearest->pigment.color.rgb.x, nearest->finish.diffuse * nearest->pigment.color.rgb.y, nearest->finish.diffuse * nearest->pigment.color.rgb.z);
+						vec3 Ks = vec3(nearest->finish.specular * nearest->pigment.color.rgb.x, nearest->finish.specular * nearest->pigment.color.rgb.y, nearest->finish.specular * nearest->pigment.color.rgb.z);
+
+						if (nearest->finish.diffuse > 0.f) {
+							// Calculate diffuse!
+							glm::vec3 g_Kd, g_N, g_L, g_Lc, D;
+
+							g_Kd = glm::vec3(Kd.x, Kd.y, Kd.z);
+
+							vec3 norm = nearest->getNormal(pos);
+							g_N = glm::vec3(norm.x, norm.y, norm.z);
+
+							g_L = glm::vec3(light->d.x, light->d.y, light->d.z);
+
+							g_Lc = glm::vec3(lights[k]->pigment.color.rgb.x, lights[k]->pigment.color.rgb.y, lights[k]->pigment.color.rgb.z);
+
+							D = g_Kd * glm::dot(g_N, g_L) * g_Lc;
+
+							float *data = glm::value_ptr(D);
+							color.x += data[0];
+							color.y += data[1];
+							color.z += data[2];
+						}
+
+						if (nearest->finish.specular > 0.f) {
+							// Calculate specular!
+							glm::vec3 g_Ks, g_N, g_L, g_pos, g_cam, g_V, g_H, g_Lc, S;
+
+							g_Ks = glm::vec3(Ks.x, Ks.y, Ks.z);
+
+							vec3 norm = nearest->getNormal(pos);
+							g_N = glm::vec3(norm.x, norm.y, norm.z);
+
+							g_L = glm::vec3(light->d.x, light->d.y, light->d.z);
+
+							g_pos = glm::vec3(pos.x, pos.y, pos.z);
+							g_cam = glm::vec3(camera->location.x, camera->location.y, camera->location.z);
+
+							g_V = glm::normalize(g_cam - g_pos);
+
+							g_H = glm::normalize(g_V + g_L);
+
+							g_Lc = glm::vec3(lights[k]->pigment.color.rgb.x, lights[k]->pigment.color.rgb.y, lights[k]->pigment.color.rgb.z);
+
+							S = g_Ks * pow(glm::dot(g_H, g_N), pow(nearest->finish.roughness, 2)) * g_Lc;
+
+							float *data = glm::value_ptr(S);
+							color.x += data[0];
+							color.y += data[1];
+							color.z += data[2];
+						} 
+					}
+				}
+			}
+			if (color.x > 1) {
+				color.x = 1;
+			}
+			if (color.y > 1) {
+				color.y = 1;
+			}
+			if (color.z > 1) {
+				color.z = 1;
+			}
+
+			unsigned int red = (unsigned int)std::round(color.x * 255.f);
+			unsigned int green = (unsigned int)std::round(color.y * 255.f);
+			unsigned int blue = (unsigned int)std::round(color.z * 255.f);
+
+			image->setPixel(i, j, red, green, blue);
+		}
+	}
+
+	image->writeToFile(outfilename);
+}
+
+void printPixelColor() {
+
+}
+
 
 int main(int argc, char * argv[]) {
 	if (parseArgs(argc, argv)) {
@@ -229,17 +361,11 @@ int main(int argc, char * argv[]) {
 
 	parseFile();
 
-	if (mode == SCENE_INFO) {
-		printSceneInfo();
-	}
-	else if (mode == PIXEL_RAY) {
-		printPixelRay();
-	}
-	else if (mode == FIRST_HIT) {
-		printFirstHit();
+	if (mode == RENDER) {
+		renderScene();
 	}
 	else {
-		raycast();
+		printPixelColor();
 	}
 
 	return EXIT_SUCCESS;

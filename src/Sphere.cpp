@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Sphere.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 using namespace Objects;
 
@@ -65,4 +66,21 @@ float Sphere::getFirstCollision(Ray* ray) {
 	// No solutions
 
 	return -1;
+}
+
+vec3 Sphere::getNormal(vec3 point) {
+	vec3 normal;
+	glm::vec3 cent, out, norm;
+
+	cent = glm::vec3(center.x, center.y, center.z);
+	out = glm::vec3(point.x, point.y, point.z);
+
+	norm = glm::normalize(out - cent);
+
+	float* data = glm::value_ptr(norm);
+	normal.x = data[0];
+	normal.y = data[1];
+	normal.z = data[2];
+
+	return normal;
 }

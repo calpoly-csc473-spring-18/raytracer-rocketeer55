@@ -14,6 +14,7 @@ namespace Objects {
 		virtual std::string type() = 0;
 		virtual void print() = 0;
 		virtual float getFirstCollision(Ray* ray) = 0;
+		virtual vec3 getNormal(vec3 point) = 0;
 	};
 }
 

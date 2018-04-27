@@ -89,7 +89,7 @@ Pigment Parse::load_pigment(std::stringstream & Stream)
 Finish Parse::load_finish(std::stringstream & Stream)
 {
 	Finish finish;
-	finish.ambient = finish.diffuse = 0.f;
+	finish.ambient = finish.diffuse = finish.specular = finish.roughness = finish.reflection = finish.refraction = finish.metallic = finish.ior = 0.f;
 	std::string temp;
 	std::stringbuf buf;
 	std::stringstream newstream;
@@ -116,6 +116,72 @@ Finish Parse::load_finish(std::stringstream & Stream)
 
 			newstream >> temp;
 			int read = sscanf(temp.c_str(), "%f", &(finish.diffuse));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("specular") == 0) {
+			// SPECULAR!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.specular));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("roughness") == 0) {
+			// ROUGHNESS!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.roughness));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("reflection") == 0) {
+			// REFLECTION!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.reflection));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("refraction") == 0) {
+			// REFRACTION!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.refraction));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("metallic") == 0) {
+			// METALLIC!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.refraction));
+
+			if (read != 1) {
+				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;
+			}
+		}
+
+		else if (temp.compare("ior") == 0) {
+			// IOR!
+
+			newstream >> temp;
+			int read = sscanf(temp.c_str(), "%f", &(finish.ior));
 
 			if (read != 1) {
 				std::cerr << "Expected to read 1 float element but found '" << temp << "'" << std::endl;

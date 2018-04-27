@@ -1,6 +1,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <math.h>
+
 namespace Objects {
 
 	struct vec3 {
@@ -8,6 +10,8 @@ namespace Objects {
 
 		vec3();
 		vec3(float _x, float _y, float _z);
+
+		static float getDistance(vec3 v1, vec3 v2);
 	};
 
 	struct vec4 {

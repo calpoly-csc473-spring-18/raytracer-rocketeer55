@@ -36,3 +36,7 @@ float Plane::getFirstCollision(Ray* ray) {
 	}
 	return t;
 }
+
+vec3 Plane::getNormal(vec3 point) {
+	return normal;
+}

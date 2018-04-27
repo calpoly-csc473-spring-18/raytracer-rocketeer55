@@ -43,6 +43,22 @@ Ray::Ray(int _x, int _y, int _width, int _height, Camera* camera) {
 	d.z = data[2];
 }
 
+Ray::Ray(vec3 _origin, vec3 _destination) {
+	glm::vec3 orig, dest, D;
+
+	origin = _origin;
+
+	orig = glm::vec3(_origin.x, _origin.y, _origin.z);
+	dest = glm::vec3(_destination.x, _destination.y, _destination.z);
+
+	D = normalize(dest - orig);
+
+	float* data = glm::value_ptr(D);
+	d.x = data[0];
+	d.y = data[1];
+	d.z = data[2];
+}
+
 void Ray::print() {
 	std::cout << "Pixel: [" << x << ", " << y << "] Ray: {";
 	std::cout << std::setiosflags(std::ios::fixed);
