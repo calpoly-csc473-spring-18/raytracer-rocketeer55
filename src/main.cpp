@@ -213,131 +213,142 @@ void renderScene() {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			ray = new Ray(i, j, width, height, camera);
+			color = vec3();
 
 			Object* nearest = NULL;
 			float t = 0, nearest_t = -1;
 
-			for (unsigned int i = 0; i < objects.size(); i++) {
-				Object* o = objects[i];
+			for (unsigned int k = 0; k < objects.size(); k++) {
+				Object* o = objects[k];
 				t = o->getFirstCollision(ray);
+
 				if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
 					nearest_t = t;
 					nearest = o;
 				}
 			}
 
-			if (nearest == NULL) {
-				// Ray doesn't collide with an object
-				image->setPixel(i, j, 0, 0, 0);
-				color = vec3();
-			}
+			if (nearest_t != -1) {
+				// Hits an Object - Calculate color!
+				Object* object = nearest;
 
-			else {
-				vec3 pos = vec3(ray->origin.x + nearest_t * ray->d.x, ray->origin.y + nearest_t * ray->d.y, ray->origin.z + nearest_t * ray->d.z);
+				// First add base-ambient color
+				color.x = object->finish.ambient * object->pigment.color.rgb.x;
+				color.y = object->finish.ambient * object->pigment.color.rgb.y;
+				color.z = object->finish.ambient * object->pigment.color.rgb.z;
 
-				color = vec3();
+				for (unsigned int l = 0; l < lights.size(); l++) {
+					Light* light = lights[l];
 
-				color.x += nearest->finish.ambient * nearest->pigment.color.rgb.x;
-				color.y += nearest->finish.ambient * nearest->pigment.color.rgb.y;
-				color.z += nearest->finish.ambient * nearest->pigment.color.rgb.z;
+					// INSTANTIATE COLOR VARIABLES
 
-				// Check if in shadow
-				for (unsigned int k = 0; k < lights.size(); k++) {
-					Ray *light = new Ray(pos, lights[k]->location);
+					// Calculate position of intersection
+					glm::vec3 o = glm::vec3(ray->origin.x, ray->origin.y, ray->origin.z);
+					glm::vec3 d = glm::vec3(ray->d.x, ray->d.y, ray->d.z);
+					glm::vec3 pos = o + nearest_t * d;
 
-					// adjust origin of light to avoid SHADOW ACNE!
-					light->origin.x = pos.x + light->d.x * EPSILON;
-					light->origin.y = pos.y + light->d.y * EPSILON;
-					light->origin.z = pos.z + light->d.z * EPSILON;
+					// Calculate normal on object at position
+					vec3 position = vec3();
+					float *data = glm::value_ptr(pos);
+					position.x = data[0];
+					position.y = data[1];
+					position.z = data[2];
+
+					vec3 norm = object->getNormal(position);
+					glm::vec3 N = glm::vec3(norm.x, norm.y, norm.z);
+
+					// Calculate light vector at position
+					glm::vec3 light_pos = glm::vec3(light->location.x, light->location.y, light->location.z);
+					glm::vec3 L = glm::normalize(light_pos - pos);
+
+					// Calculate view vector at position
+					glm::vec3 V = glm::vec3(-ray->d.x, -ray->d.y, -ray->d.z);
+
+					// Calculate half vector at position
+					glm::vec3 H = glm::normalize(V + L);
+
+					// Calculate alpha
+					float alpha = 2 / (object->finish.roughness * object->finish.roughness) - 2;
+
+					// Calculate N dot L
+					float NdotL = std::max(glm::dot(N, L), 0.f);
+
+					// Calculate H dot N
+					float HdotN = std::max(glm::dot(H, N), 0.f);
+
+					// CHECK IF IN SHADOW
+					Ray* shadow_ray = new Ray(position, light->location);
+					glm::vec3 shadow_origin = pos + L * EPSILON;
+
+					data = glm::value_ptr(shadow_origin);
+					shadow_ray->origin.x = data[0];
+					shadow_ray->origin.y = data[1];
+					shadow_ray->origin.z = data[2];
 
 					Object* shadow_nearest = NULL;
-					float shadow_t = 0, shadow_nearest_t = vec3::getDistance(light->origin, lights[k]->location);
-
+					float shadow_t = 0, shadow_nearest_t = vec3::getDistance(shadow_ray->origin, light->location);
 					for (unsigned int shadow_i = 0; shadow_i < objects.size(); shadow_i++) {
 						Object* o = objects[shadow_i];
-						shadow_t = o->getFirstCollision(light);
-						if (shadow_t != -1 && (shadow_t < shadow_nearest_t)) {
+						shadow_t = o->getFirstCollision(shadow_ray);
+						if (shadow_t != -1 && shadow_t < shadow_nearest_t) {
 							shadow_nearest_t = shadow_t;
 							shadow_nearest = o;
 						}
 					}
 
 					if (shadow_nearest == NULL) {
-						// No shadow here! Calculate BLINN_PHONG lighting
+						// Now calculate and add diffuse
+						glm::vec3 Kd = glm::vec3(object->finish.diffuse * object->pigment.color.rgb.x,
+							object->finish.diffuse * object->pigment.color.rgb.y,
+							object->finish.diffuse * object->pigment.color.rgb.z);
 
-						if (nearest->pigment.colortype == COLOR_RGBF) {
-							std::cerr << "Color type RGBF - Not yet implemented" << std::endl;
-						}
-						
-						vec3 Kd = vec3(nearest->finish.diffuse * nearest->pigment.color.rgb.x, nearest->finish.diffuse * nearest->pigment.color.rgb.y, nearest->finish.diffuse * nearest->pigment.color.rgb.z);
-						vec3 Ks = vec3(nearest->finish.specular * nearest->pigment.color.rgb.x, nearest->finish.specular * nearest->pigment.color.rgb.y, nearest->finish.specular * nearest->pigment.color.rgb.z);
+						color.x += Kd.x * NdotL * light->pigment.color.rgb.x;
+						color.y += Kd.y * NdotL * light->pigment.color.rgb.y;
+						color.z += Kd.z * NdotL * light->pigment.color.rgb.z;
 
-						if (nearest->finish.diffuse > 0.f) {
-							// Calculate diffuse!
-							glm::vec3 g_Kd, g_N, g_L, g_Lc, D;
+						// Now calculate and add specular
+						glm::vec3 Ks = glm::vec3(object->finish.specular * object->pigment.color.rgb.x,
+							object->finish.specular * object->pigment.color.rgb.y,
+							object->finish.specular * object->pigment.color.rgb.z);
 
-							g_Kd = glm::vec3(Kd.x, Kd.y, Kd.z);
-
-							vec3 norm = nearest->getNormal(pos);
-							g_N = glm::vec3(norm.x, norm.y, norm.z);
-
-							g_L = glm::vec3(light->d.x, light->d.y, light->d.z);
-
-							g_Lc = glm::vec3(lights[k]->pigment.color.rgb.x, lights[k]->pigment.color.rgb.y, lights[k]->pigment.color.rgb.z);
-
-							D = g_Kd * glm::dot(g_N, g_L) * g_Lc;
-
-							float *data = glm::value_ptr(D);
-							color.x += data[0];
-							color.y += data[1];
-							color.z += data[2];
-						}
-
-						if (nearest->finish.specular > 0.f) {
-							// Calculate specular!
-							glm::vec3 g_Ks, g_N, g_L, g_pos, g_cam, g_V, g_H, g_Lc, S;
-
-							g_Ks = glm::vec3(Ks.x, Ks.y, Ks.z);
-
-							vec3 norm = nearest->getNormal(pos);
-							g_N = glm::vec3(norm.x, norm.y, norm.z);
-
-							g_L = glm::vec3(light->d.x, light->d.y, light->d.z);
-
-							g_pos = glm::vec3(pos.x, pos.y, pos.z);
-							g_cam = glm::vec3(camera->location.x, camera->location.y, camera->location.z);
-
-							g_V = glm::normalize(g_cam - g_pos);
-
-							g_H = glm::normalize(g_V + g_L);
-
-							g_Lc = glm::vec3(lights[k]->pigment.color.rgb.x, lights[k]->pigment.color.rgb.y, lights[k]->pigment.color.rgb.z);
-
-							S = g_Ks * pow(glm::dot(g_H, g_N), pow(nearest->finish.roughness, 2)) * g_Lc;
-
-							float *data = glm::value_ptr(S);
-							color.x += data[0];
-							color.y += data[1];
-							color.z += data[2];
-						} 
+						color.x += Ks.x * powf(HdotN, alpha) * light->pigment.color.rgb.x;
+						color.y += Ks.y * powf(HdotN, alpha) * light->pigment.color.rgb.y;
+						color.z += Ks.z * powf(HdotN, alpha) * light->pigment.color.rgb.z;
 					}
 				}
-			}
-			if (color.x > 1) {
-				color.x = 1;
-			}
-			if (color.y > 1) {
-				color.y = 1;
-			}
-			if (color.z > 1) {
-				color.z = 1;
-			}
 
-			unsigned int red = (unsigned int)std::round(color.x * 255.f);
-			unsigned int green = (unsigned int)std::round(color.y * 255.f);
-			unsigned int blue = (unsigned int)std::round(color.z * 255.f);
+				// Clamp colors between 0 and 1
+				if (color.x > 1) {
+					color.x = 1;
+				}
+				if (color.x < 0) {
+					color.x = 0;
+				}
+				if (color.y > 1) {
+					color.y = 1;
+				}
+				if (color.y < 0) {
+					color.y = 0;
+				}
+				if (color.z > 1) {
+					color.z = 1;
+				}
+				if (color.z < 0) {
+					color.z = 0;
+				}
 
-			image->setPixel(i, j, red, green, blue);
+				// Change color to RGB
+				unsigned int red = (unsigned int)std::round(color.x * 255.f);
+				unsigned int green = (unsigned int)std::round(color.y * 255.f);
+				unsigned int blue = (unsigned int)std::round(color.z * 255.f);
+
+				image->setPixel(i, j, red, green, blue);
+			}
+			else {
+				// No object
+
+				image->setPixel(i, j, 0, 0, 0);
+			}
 		}
 	}
 
@@ -345,7 +356,148 @@ void renderScene() {
 }
 
 void printPixelColor() {
+	Ray* ray = new Ray(x, y, width, height, camera);
+	vec3 color = vec3();
 
+	Object* nearest = NULL;
+	float t = 0, nearest_t = -1;
+
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		Object* o = objects[i];
+		t = o->getFirstCollision(ray);
+
+		if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
+			nearest_t = t;
+			nearest = o;
+		}
+	}
+
+	if (nearest_t != -1) {
+		// Hits an Object - Calculate color!
+		Object* object = nearest;
+
+		// First add base-ambient color
+		color.x = object->finish.ambient * object->pigment.color.rgb.x;
+		color.y = object->finish.ambient * object->pigment.color.rgb.y;
+		color.z = object->finish.ambient * object->pigment.color.rgb.z;
+		
+		for (unsigned int l = 0; l < lights.size(); l++) {
+			Light* light = lights[l];
+
+			// INSTANTIATE COLOR VARIABLES
+
+			// Calculate position of intersection
+			glm::vec3 o = glm::vec3(ray->origin.x, ray->origin.y, ray->origin.z);
+			glm::vec3 d = glm::vec3(ray->d.x, ray->d.y, ray->d.z);
+			glm::vec3 pos = o + nearest_t * d;
+
+			// Calculate normal on object at position
+			vec3 position = vec3();
+			float *data = glm::value_ptr(pos);
+			position.x = data[0];
+			position.y = data[1];
+			position.z = data[2];
+
+			vec3 norm = object->getNormal(position);
+			glm::vec3 N = glm::vec3(norm.x, norm.y, norm.z);
+
+			// Calculate light vector at position
+			glm::vec3 light_pos = glm::vec3(light->location.x, light->location.y, light->location.z);
+			glm::vec3 L = glm::normalize(light_pos - pos);
+
+			// Calculate view vector at position
+			glm::vec3 V = glm::vec3(-ray->d.x, -ray->d.y, -ray->d.z);
+
+			// Calculate half vector at position
+			glm::vec3 H = glm::normalize(V + L);
+
+			// Calculate alpha
+			float alpha = object->finish.roughness * object->finish.roughness;
+
+			// Calculate N dot L
+			float NdotL = std::max(glm::dot(N, L), 0.f);
+
+			// Calculate H dot N
+			float HdotN = std::max(glm::dot(H, N), 0.f);
+
+			// CHECK IF IN SHADOW
+			Ray* shadow_ray = new Ray(position, light->location);
+			glm::vec3 shadow_origin = pos + L * EPSILON;
+
+			data = glm::value_ptr(shadow_origin);
+			shadow_ray->origin.x = data[0];
+			shadow_ray->origin.y = data[1];
+			shadow_ray->origin.z = data[2];
+
+			Object* shadow_nearest = NULL;
+			float shadow_t = 0, shadow_nearest_t = vec3::getDistance(shadow_ray->origin, light->location);
+			for (unsigned int shadow_i = 0; shadow_i < objects.size(); shadow_i++) {
+				Object* o = objects[shadow_i];
+				shadow_t = o->getFirstCollision(shadow_ray);
+				if (shadow_t != -1 && shadow_t < shadow_nearest_t) {
+					shadow_nearest_t = shadow_t;
+					shadow_nearest = o;
+				}
+			}
+
+			if (shadow_nearest == NULL) {
+				// Now calculate and add diffuse
+				glm::vec3 Kd = glm::vec3(object->finish.diffuse * object->pigment.color.rgb.x,
+					object->finish.diffuse * object->pigment.color.rgb.y,
+					object->finish.diffuse * object->pigment.color.rgb.z);
+
+				color.x += Kd.x * NdotL * light->pigment.color.rgb.x;
+				color.y += Kd.y * NdotL * light->pigment.color.rgb.y;
+				color.z += Kd.z * NdotL * light->pigment.color.rgb.z;
+
+				// Now calculate and add specular
+				glm::vec3 Ks = glm::vec3(object->finish.specular * object->pigment.color.rgb.x,
+					object->finish.specular * object->pigment.color.rgb.y,
+					object->finish.specular * object->pigment.color.rgb.z);
+
+				color.x += Ks.x * powf(HdotN, alpha) * light->pigment.color.rgb.x;
+				color.y += Ks.y * powf(HdotN, alpha) * light->pigment.color.rgb.y;
+				color.z += Ks.z * powf(HdotN, alpha) * light->pigment.color.rgb.z;
+			}
+		}
+
+		// Clamp colors between 0 and 1
+		if (color.x > 1) {
+			color.x = 1;
+		}
+		if (color.x < 0) {
+			color.x = 0;
+		}
+		if (color.y > 1) {
+			color.y = 1;
+		}
+		if (color.y < 0) {
+			color.y = 0;
+		}
+		if (color.z > 1) {
+			color.z = 1;
+		}
+		if (color.z < 0) {
+			color.z = 0;
+		}
+
+		// Change color to RGB
+		unsigned int red = (unsigned int)std::round(color.x * 255.f);
+		unsigned int green = (unsigned int)std::round(color.y * 255.f);
+		unsigned int blue = (unsigned int)std::round(color.z * 255.f);
+
+		ray->print();
+		std::cout << "T = " << nearest_t << std::endl;
+		std::cout << "Object Type: " << nearest->type() << std::endl;
+		std::cout << "BRDF: Blinn-Phong" << std::endl;
+		std::cout << "Color: (" << red << ", " << green << ", " << blue << ")" << std::endl;
+	}
+	else {
+		// No object
+
+		ray->print();
+		std::cout << "No Hit" << std::endl;
+	}
 }
 
 

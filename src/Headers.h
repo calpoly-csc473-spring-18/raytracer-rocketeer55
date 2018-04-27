@@ -8,6 +8,7 @@
 #include <sstream>
 #include <memory>
 #include <iomanip>
+#include <algorithm>
 #include "Globals.h"
 #include "Parse.h"
 #include "glm/glm.hpp"

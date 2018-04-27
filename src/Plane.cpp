@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Plane.h"
+#include "glm\glm.hpp"
 
 using namespace Objects;
 
@@ -30,7 +31,10 @@ void Plane::print() {
 }
 
 float Plane::getFirstCollision(Ray* ray) {
-	float t = (distance - ray->origin.x * normal.x + ray->origin.y * normal.y + ray->origin.z * normal.z) / (ray->d.x * normal.x + ray->d.y * normal.y + ray->d.z * normal.z);
+	glm::vec3 p0 = glm::vec3(ray->origin.x, ray->origin.y, ray->origin.z);
+	glm::vec3 n = glm::vec3(normal.x, normal.y, normal.z);
+	glm::vec3 dir = glm::vec3(ray->d.x, ray->d.y, ray->d.z);
+	float t = (distance - glm::dot(p0, n)) / glm::dot(dir, n);
 	if (t < 0) {
 		return -1;
 	}
