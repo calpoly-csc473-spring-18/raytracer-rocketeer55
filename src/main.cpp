@@ -40,7 +40,16 @@ int parseArgs(int &argc, char *argv[]) {
 		width = atoi(argv[3]);
 		height = atoi(argv[4]);
 	}
-	else if (mode == PIXEL_COLOR) {
+	else if (mode == PIXEL_RAY) {
+		if (argc < 7) {
+			return 1;
+		}
+		width = atoi(argv[3]);
+		height = atoi(argv[4]);
+		x = atoi(argv[5]);
+		y = atoi(argv[6]);
+	}
+	else {
 		if (argc < 7) {
 			return 1;
 		}
