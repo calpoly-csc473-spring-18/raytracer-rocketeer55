@@ -24,6 +24,9 @@ int parseArgs(int &argc, char *argv[]) {
 	else if (input.compare("pixelcolor") == 0) {
 		mode = PIXEL_COLOR;
 	}
+	else if (input.compare("pixelray") == 0) {
+		mode = PIXEL_RAY;
+	}
 	else {
 		return 1;
 	}
@@ -516,8 +519,11 @@ int main(int argc, char * argv[]) {
 	if (mode == RENDER) {
 		renderScene();
 	}
-	else {
+	else if (mode == PIXEL_COLOR) {
 		printPixelColor();
+	}
+	else {
+		printPixelRay();
 	}
 
 	return EXIT_SUCCESS;

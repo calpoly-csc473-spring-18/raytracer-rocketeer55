@@ -5,6 +5,7 @@ namespace Globals
 {
 	static const int RENDER = 0;
 	static const int PIXEL_COLOR = 1;
+	static const int PIXEL_RAY = 2;
 
 	static const int COLOR_RGB = 0;
 	static const int COLOR_RGBF = 1;
