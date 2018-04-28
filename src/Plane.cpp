@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Plane.h"
-#include "glm\glm.hpp"
+#include "glm/glm.hpp"
 
 using namespace Objects;
 
