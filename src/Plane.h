@@ -5,16 +5,16 @@
 
 namespace Objects {
 	struct Plane : public Object {
-		vec3 normal;
+		glm::vec3 normal;
 		float distance;
 
 		Plane();
-		Plane(vec3 _normal, float _distance);
+		Plane(glm::vec3 _normal, float _distance);
 
 		std::string type();
 		void print();
 		float getFirstCollision(Ray *ray);
-		vec3 getNormal(vec3 point);
+		glm::vec3 getNormal(glm::vec3 point);
 	};
 }
 

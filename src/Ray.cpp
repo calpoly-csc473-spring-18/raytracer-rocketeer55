@@ -7,8 +7,8 @@
 using namespace Objects;
 
 Ray::Ray() {
-	d.x = d.y = d.z = 0.f;
-	origin.x = origin.y = origin.z = 0.f;
+	d = glm::vec3(0.f);
+	origin = glm::vec3(0.f);
 	x = y = width = height = 0;
 }
 
@@ -27,36 +27,23 @@ Ray::Ray(int _x, int _y, int _width, int _height, Camera* camera) {
 	V = -0.5f + (y + 0.5f) / (float)height;
 	W = -1.f;
 
-	u = glm::vec3(camera->right.x, camera->right.y, camera->right.z);
-	v = glm::vec3(camera->up.x, camera->up.y, camera->up.z);
+	u = camera->right;
+	v = camera->up;
 
-	glm::vec3 l = glm::vec3(camera->look_at.x - camera->location.x, camera->look_at.y - camera->location.y, camera->look_at.z - camera->location.z);
+	glm::vec3 l = camera->look_at - camera->location;
 	l = glm::normalize(l);
 	w = l * -1.f;
 
 	glm::vec3 D = u * U + v * V + w * W;
-	D = glm::normalize(D);
-
-	float* data = glm::value_ptr(D);
-	d.x = data[0];
-	d.y = data[1];
-	d.z = data[2];
+	d = glm::normalize(D);
 }
 
-Ray::Ray(vec3 _origin, vec3 _destination) {
+Ray::Ray(glm::vec3 _origin, glm::vec3 _destination) {
 	glm::vec3 orig, dest, D;
 
 	origin = _origin;
 
-	orig = glm::vec3(_origin.x, _origin.y, _origin.z);
-	dest = glm::vec3(_destination.x, _destination.y, _destination.z);
-
-	D = normalize(dest - orig);
-
-	float* data = glm::value_ptr(D);
-	d.x = data[0];
-	d.y = data[1];
-	d.z = data[2];
+	d = normalize(_destination - _origin);
 }
 
 void Ray::print() {

@@ -5,11 +5,11 @@
 using namespace Objects;
 
 Plane::Plane() {
-	normal = vec3();
+	normal = glm::vec3(0.f);
 	distance = 0.f;
 }
 
-Plane::Plane(vec3 _normal, float _distance) {
+Plane::Plane(glm::vec3 _normal, float _distance) {
 	normal = _normal;
 	distance = _distance;
 }
@@ -31,16 +31,13 @@ void Plane::print() {
 }
 
 float Plane::getFirstCollision(Ray* ray) {
-	glm::vec3 p0 = glm::vec3(ray->origin.x, ray->origin.y, ray->origin.z);
-	glm::vec3 n = glm::vec3(normal.x, normal.y, normal.z);
-	glm::vec3 dir = glm::vec3(ray->d.x, ray->d.y, ray->d.z);
-	float t = (distance - glm::dot(p0, n)) / glm::dot(dir, n);
+	float t = (distance - glm::dot(ray->origin, normal)) / glm::dot(ray->d, normal);
 	if (t < 0) {
 		return -1;
 	}
 	return t;
 }
 
-vec3 Plane::getNormal(vec3 point) {
+glm::vec3 Plane::getNormal(glm::vec3 point) {
 	return normal;
 }

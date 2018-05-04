@@ -4,11 +4,11 @@
 using namespace Objects;
 
 Light::Light() {
-	location = vec3();
+	location = glm::vec3(0.f);
 	pigment = Pigment();
 }
 
-Light::Light(vec3 _location, Pigment _pigment) {
+Light::Light(glm::vec3 _location, Pigment _pigment) {
 	location = _location;
 	pigment = _pigment;
 }

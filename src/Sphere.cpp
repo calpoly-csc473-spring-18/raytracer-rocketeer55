@@ -6,11 +6,11 @@
 using namespace Objects;
 
 Sphere::Sphere() {
-	center = vec3();
+	center = glm::vec3();
 	radius = 0.f;
 }
 
-Sphere::Sphere(vec3 _center, float _radius) {
+Sphere::Sphere(glm::vec3 _center, float _radius) {
 	center = _center;
 	radius = _radius;
 }
@@ -34,13 +34,9 @@ void Sphere::print() {
 float Sphere::getFirstCollision(Ray* ray) {
 	float a, b, c, discriminant, t;
 
-	glm::vec3 _d = glm::vec3(ray->d.x, ray->d.y, ray->d.z);
-	glm::vec3 _origin = glm::vec3(ray->origin.x, ray->origin.y, ray->origin.z);
-	glm::vec3 _center = glm::vec3(center.x, center.y, center.z);
-
-	a = glm::dot(_d, _d);
-	b = glm::dot(2.f * _d, _origin - _center);
-	c = glm::dot(_origin - _center, _origin - _center) - (radius * radius);
+	a = glm::dot(ray->d, ray->d);
+	b = glm::dot(2.f * ray->d, ray->origin - center);
+	c = glm::dot(ray->origin - center, ray->origin - center) - (radius * radius);
 
 	discriminant = (b * b) - (4 * a * c);
 	if (discriminant == 0) {
@@ -68,19 +64,6 @@ float Sphere::getFirstCollision(Ray* ray) {
 	return -1;
 }
 
-vec3 Sphere::getNormal(vec3 point) {
-	vec3 normal;
-	glm::vec3 cent, out, norm;
-
-	cent = glm::vec3(center.x, center.y, center.z);
-	out = glm::vec3(point.x, point.y, point.z);
-
-	norm = glm::normalize(out - cent);
-
-	float* data = glm::value_ptr(norm);
-	normal.x = data[0];
-	normal.y = data[1];
-	normal.z = data[2];
-
-	return normal;
+glm::vec3 Sphere::getNormal(glm::vec3 point) {
+	return glm::normalize(point - center);
 }

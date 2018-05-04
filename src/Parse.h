@@ -2,7 +2,6 @@
 #define PARSE_H
 
 #include <string>
-#include "Vector.h"
 #include "Pigment.h"
 #include "Finish.h"
 #include "Camera.h"
@@ -16,8 +15,8 @@ class Parse {
 public:
 	Parse() {};
 
-	static vec3 Vector(std::stringstream &Stream);
-	static vec4 Vector4(std::stringstream &Stream);
+	static glm::vec3 Vector(std::stringstream &Stream);
+	static glm::vec4 Vector4(std::stringstream &Stream);
 	static Pigment load_pigment(std::stringstream &Stream);
 	static Finish load_finish(std::stringstream &Stream);
 	static Camera* load_cam(std::stringstream &Stream);

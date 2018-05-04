@@ -1,35 +1,35 @@
 #include <iostream>
-
 #include "Pigment.h"
-#include "Globals.h"
 
 using namespace Objects;
 
-Color::Color() {}
-
-Color::Color(vec3 _rgb) {
-	rgb = _rgb;
-}
-
-Color::Color(vec4 _rgbf) {
-	rgbf = _rgbf;
-}
-
 Pigment::Pigment() {
-	color = Color();
-	colortype = -1;
+	isRGB = true;
+	r = 0.f;
+	g = 0.f;
+	b = 0.f;
 }
 
-Pigment::Pigment(Color _color, int _colortype) {
-	color = _color;
-	colortype = _colortype;
+Pigment::Pigment(float _r, float _g, float _b) {
+	isRGB = true;
+	r = _r;
+	g = _g;
+	b = _b;
+}
+
+Pigment::Pigment(float _r, float _g, float _b, float _f) {
+	isRGB = false;
+	r = _r;
+	g = _g; 
+	b = _b;
+	f = _f;
 }
 
 void Pigment::print() {
-	if (colortype == Globals::COLOR_RGB) {
-		std::cout << color.rgb.x << " " << color.rgb.y << " " << color.rgb.z;
+	if (isRGB) {
+		std::cout << r << " " << g << " " << b;
 	}
 	else {
-		std::cout << color.rgbf.x << " " << color.rgbf.y << " " << color.rgbf.z << " " << color.rgbf.w;
+		std::cout << r << " " << g << " " << b << " " << f;
 	}
 }

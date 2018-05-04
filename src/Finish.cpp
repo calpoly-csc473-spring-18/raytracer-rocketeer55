@@ -3,10 +3,5 @@
 using namespace Objects;
 
 Finish::Finish() {
-	
-}
-
-Finish::Finish(float _ambient, float _diffuse) {
-	ambient = _ambient;
-	diffuse = _diffuse;
+	ambient = diffuse = specular = roughness = reflection = refraction = metallic = ior = 0.f;
 }

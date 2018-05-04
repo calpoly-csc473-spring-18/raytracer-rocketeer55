@@ -1,24 +1,16 @@
 #ifndef PIGMENT_H
 #define PIGMENT_H
 
-#include "Vector.h"
+#include <vector>
 
 namespace Objects {
-	union Color {
-		vec3 rgb;
-		vec4 rgbf;
-
-		Color();
-		Color(vec3 _rgb);
-		Color(vec4 _rgbf);
-	};
-
 	struct Pigment {
-		Color color;
-		int colortype;
+		float r, g, b, f = 0.f;
+		bool isRGB = true;
 
 		Pigment();
-		Pigment(Color _color, int _colortype);
+		Pigment(float r, float g, float b);
+		Pigment(float r, float g, float b, float f);
 
 		void print();
 	};

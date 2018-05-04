@@ -4,10 +4,8 @@
 #include <iostream>
 #include <sstream>
 
-vec3 Parse::Vector(std::stringstream & Stream)
-{
-	vec3 v;
-	v.x = v.y = v.z = 0.f;
+glm::vec3 Parse::Vector(std::stringstream & Stream) {
+	glm::vec3 v = glm::vec3(0.f);
 	std::stringbuf buf;
 
 	Stream.ignore(1, '<');
@@ -24,10 +22,8 @@ vec3 Parse::Vector(std::stringstream & Stream)
 	return v;
 }
 
-vec4 Parse::Vector4(std::stringstream & Stream)
-{
-	vec4 v;
-	v.x = v.y = v.z = v.w = 0.f;
+glm::vec4 Parse::Vector4(std::stringstream & Stream) {
+	glm::vec4 v = glm::vec4(0.f);
 	std::stringbuf buf;
 
 	Stream.ignore(1, '<');
@@ -44,11 +40,8 @@ vec4 Parse::Vector4(std::stringstream & Stream)
 	return v;
 }
 
-Pigment Parse::load_pigment(std::stringstream & Stream)
-{
+Pigment Parse::load_pigment(std::stringstream & Stream) {
 	Pigment pigment;
-
-	pigment.colortype = -1;
 	std::string temp;
 
 	Stream >> temp;
@@ -60,23 +53,23 @@ Pigment Parse::load_pigment(std::stringstream & Stream)
 	Stream >> temp;
 	if (temp.compare("rgb") == 0) {
 		// color is rgb
-
-		pigment.colortype = Globals::COLOR_RGB;
+		glm::vec3 color = glm::vec3(0.f);
 
 		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
 		Stream.unget();
-
-		pigment.color.rgb = Parse::Vector(Stream);
+		
+		color = Parse::Vector(Stream);
+		pigment = Pigment(color.x, color.y, color.z);
 	}
 	else if (temp.compare("rgbf") == 0) {
 		// color is rgbf
-
-		pigment.colortype = Globals::COLOR_RGBF;
+		glm::vec4 color = glm::vec4(0.f);
 
 		Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
 		Stream.unget();
 
-		pigment.color.rgbf = Parse::Vector4(Stream);
+		color = Parse::Vector4(Stream);
+		pigment = Pigment(color.x, color.y, color.z, color.w);
 	}
 	else {
 		std::cerr << "Unexpected color type '" << temp << "'" << std::endl;

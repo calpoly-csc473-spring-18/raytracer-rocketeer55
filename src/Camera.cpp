@@ -4,13 +4,13 @@
 using namespace Objects;
 
 Camera::Camera() {
-	location = vec3();
-	up = vec3();
-	right = vec3();
-	look_at = vec3();
+	location = glm::vec3(0.f);
+	up = glm::vec3(0.f);
+	right = glm::vec3(0.f);
+	look_at = glm::vec3(0.f);
 }
 
-Camera::Camera(vec3 _location, vec3 _up, vec3 _right, vec3 _look_at) {
+Camera::Camera(glm::vec3 _location, glm::vec3 _up, glm::vec3 _right, glm::vec3 _look_at) {
 	location = _location;
 	up = _up;
 	right = _right;
