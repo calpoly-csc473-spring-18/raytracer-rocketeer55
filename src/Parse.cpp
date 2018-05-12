@@ -350,7 +350,6 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 
 	Stream >> temp;
 	while (temp.compare("}") != 0) {
-
 		if (temp.compare("pigment") == 0) {
 			// PIGMENT!
 
@@ -372,4 +371,57 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 		Stream >> temp;
 	}
 	return plane;
+}
+
+Triangle* Parse::load_triangle(std::stringstream &Stream) {
+	Triangle* triangle = new Triangle();
+	std::string temp;
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+
+	// Point A!
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+	Stream.unget();
+
+	triangle->a = Parse::Vector(Stream);
+
+	// Point B!
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+	Stream.unget();
+
+	triangle->b = Parse::Vector(Stream);
+
+	// Point C!
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+	Stream.unget();
+
+	triangle->c = Parse::Vector(Stream);
+
+	Stream >> temp;
+	while (temp.compare("}") != 0) {
+		if (temp.compare("pigment") == 0) {
+			// PIGMENT!
+
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+
+			triangle->pigment = Parse::load_pigment(Stream);
+		}
+		else if (temp.compare("finish") == 0) {
+			// FINISH!
+
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+
+			triangle->finish = Parse::load_finish(Stream);
+		}
+		else {
+			std::cerr << "Expected either 'pigment' or 'finish' but found '" << temp << "'" << std::endl;
+		}
+
+		Stream >> temp;
+	}
+
+	return triangle;
 }

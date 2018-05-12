@@ -1,10 +1,11 @@
-#define TRIANGLE_H
+
 #ifndef TRIANGLE_H
+#define TRIANGLE_H
 
 #include "Object.h"
 
 namespace Objects {
-	struct Triangle{
+	struct Triangle : public Object{
 		glm::vec3 a, b, c;
 
 		Triangle();
@@ -17,4 +18,4 @@ namespace Objects {
 	};
 }
 
-#ifndef
+#endif

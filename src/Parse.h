@@ -8,6 +8,7 @@
 #include "Light.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "Triangle.h"
 
 using namespace Objects;
 
@@ -23,6 +24,7 @@ public:
 	static Light* load_light(std::stringstream &Stream);
 	static Sphere* load_sphere(std::stringstream &Stream);
 	static Plane* load_plane(std::stringstream &Stream);
+	static Triangle* load_triangle(std::stringstream &Stream);
 };
 
 #endif

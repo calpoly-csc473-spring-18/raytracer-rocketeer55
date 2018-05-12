@@ -105,6 +105,11 @@ int parseFile() {
 
 			scene->objects.push_back(Parse::load_plane(buffer));
 		}
+		else if (temp.compare("triangle") == 0) {
+			// is a triangle!
+
+			scene->objects.push_back(Parse::load_triangle(buffer));
+		}
 	}
 
 	return 0;
