@@ -74,6 +74,9 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, bool print, int currBounce, i
 			reflection_ray->origin = intersection->position + reflection_ray->d * Globals::EPSILON;
 
 			reflection_color = Shader::getColor(scene, reflection_ray, false, currBounce + 1, maxBounce, "Reflection") * reflection;
+			reflection_color.x *= intersection->object->pigment.r;
+			reflection_color.y *= intersection->object->pigment.g;
+			reflection_color.z *= intersection->object->pigment.b;
 		}
 
 	}
