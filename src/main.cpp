@@ -91,7 +91,7 @@ int parseFile() {
 
 	std::string temp;
 	while (buffer >> temp) {
-		if (temp.size() > 4 && temp.substr(0, 2).compare("//") == 0) {
+		if (temp.size() > 1 && temp.substr(0, 2).compare("//") == 0) {
 			// is a comment
 
 			buffer.ignore(std::numeric_limits<std::streamsize>::max(), buffer.widen('\n'));
