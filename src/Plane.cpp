@@ -7,11 +7,19 @@ using namespace Objects;
 Plane::Plane() {
 	normal = glm::vec3(0.f);
 	distance = 0.f;
+
+	Object::objectCount++;
+
+	ID = Object::objectCount;
 }
 
 Plane::Plane(glm::vec3 _normal, float _distance) {
 	normal = _normal;
 	distance = _distance;
+
+	Object::objectCount++;
+
+	ID = Object::objectCount;
 }
 
 std::string Plane::type() {

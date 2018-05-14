@@ -24,6 +24,12 @@ int parseArgs(int &argc, char *argv[]) {
 	else if (input.compare("pixelray") == 0) {
 		mode = PIXEL_RAY;
 	}
+	else if (input.compare("sceneinfo") == 0) {
+		mode = SCENE_INFO;
+	}
+	else if (input.compare("printrays") == 0) {
+		mode = PRINT_RAYS;
+	}
 	else {
 		return 1;
 	}
@@ -37,7 +43,7 @@ int parseArgs(int &argc, char *argv[]) {
 		scene->width = atoi(argv[3]);
 		scene->height = atoi(argv[4]);
 	}
-	else if (mode == PIXEL_RAY) {
+	else if (mode == PIXEL_RAY || mode == PRINT_RAYS) {
 		if (argc < 7) {
 			return 1;
 		}
@@ -45,6 +51,11 @@ int parseArgs(int &argc, char *argv[]) {
 		scene->height = atoi(argv[4]);
 		x = atoi(argv[5]);
 		y = atoi(argv[6]);
+	}
+	else if (mode == SCENE_INFO) {
+		if (argc < 3) {
+			return 1;
+		}
 	}
 	else {
 		if (argc < 7) {
@@ -80,7 +91,7 @@ int parseFile() {
 
 	std::string temp;
 	while (buffer >> temp) {
-		if (temp.compare("//") == 0) {
+		if (temp.size() > 4 && temp.substr(0, 2).compare("//") == 0) {
 			// is a comment
 
 			buffer.ignore(std::numeric_limits<std::streamsize>::max(), buffer.widen('\n'));
@@ -132,8 +143,11 @@ int main(int argc, char * argv[]) {
 	if (mode == RENDER) {
 		scene->renderScene();
 	}
-	else if (mode == PIXEL_COLOR) {
+	else if (mode == PIXEL_COLOR || mode == PRINT_RAYS) {
 		scene->printPixelColor(x, y);
+	}
+	else if (mode == SCENE_INFO) {
+		scene->printSceneInfo();
 	}
 	else {
 		Ray* ray = new Ray(x, y, scene->width, scene->height, scene->camera);

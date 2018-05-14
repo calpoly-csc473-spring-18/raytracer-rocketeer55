@@ -7,12 +7,20 @@ Triangle::Triangle() {
 	a = glm::vec3();
 	b = glm::vec3();
 	c = glm::vec3();
+
+	Object::objectCount++;
+
+	ID = Object::objectCount;
 }
 
 Triangle::Triangle(glm::vec3 _a, glm::vec3 _b, glm::vec3 _c) {
 	a = _a;
 	b = _b;
 	c = _c;
+
+	Object::objectCount++;
+
+	ID = Object::objectCount;
 }
 
 std::string Triangle::type() {

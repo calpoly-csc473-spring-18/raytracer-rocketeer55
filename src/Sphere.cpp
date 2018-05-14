@@ -5,14 +5,20 @@
 
 using namespace Objects;
 
+int Object::objectCount = 0;
+
 Sphere::Sphere() {
 	center = glm::vec3();
 	radius = 0.f;
+	Object::objectCount++;
+	ID = Object::objectCount;
 }
 
 Sphere::Sphere(glm::vec3 _center, float _radius) {
 	center = _center;
 	radius = _radius;
+	Object::objectCount++;
+	ID = Object::objectCount;
 }
 
 std::string Sphere::type() {

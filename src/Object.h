@@ -10,8 +10,11 @@
 
 namespace Objects {
 	struct Object {
+		static int objectCount;
+
 		Pigment pigment;
 		Finish finish;
+		int ID;
 		
 		virtual std::string type() = 0;
 		virtual void print() = 0;

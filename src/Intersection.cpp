@@ -19,7 +19,9 @@ Intersection::Intersection(Ray* _ray, float _t, Object* _object) {
 }
 
 void Intersection::print() {
-	std::cout << "T = " << t << std::endl;
-	std::cout << "Object Type: " << object->type() << std::endl;
-
+	std::cout << "Hit Object: (ID #" << object->ID << " - " << object->type() << ")" << std::endl;
+	std::cout << "Intersection: {" << position.x << " " << position.y << " " << position.z << "} ";
+	std::cout << "at T = " << t << std::endl;
+	glm::vec3 normal = object->getNormal(position);
+	std::cout << "Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << std::endl;
 }

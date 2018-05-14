@@ -65,14 +65,16 @@ void Scene::renderScene() {
 }
 
 void Scene::printPixelColor(int x, int y) {
-	glm::vec3 color = Shader::getColor((Scene*)this, x, y, true);
+	glm::vec3 color = Shader::getColor((Scene*)this, x, y, false);
 
 	unsigned int red = (unsigned int)std::round(color.r * 255.f);
 	unsigned int green = (unsigned int)std::round(color.g * 255.f);
 	unsigned int blue = (unsigned int)std::round(color.b * 255.f);
 
-	std::cout << "BRDF: Blinn-Phong" << std::endl;
+	std::cout << "Pixel: [" << x << ", " << y << "] ";
 	std::cout << "Color: (" << red << ", " << green << ", " << blue << ")" << std::endl;
+
+	color = Shader::getColor((Scene*)this, x, y, true);
 }
 
 Intersection* Scene::getFirstIntersection(Ray* ray) {
