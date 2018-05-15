@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 Scene::Scene() {
 	camera = new Camera();
@@ -52,6 +53,10 @@ void Scene::renderScene() {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			color = Shader::getColor((Scene*)this, i, j, false);
+
+			color.r = std::min(std::max(color.r, 0.f), 1.0f);
+			color.g = std::min(std::max(color.g, 0.f), 1.0f);
+			color.b = std::min(std::max(color.b, 0.f), 1.0f);
 
 			unsigned int red = (unsigned int)std::round(color.r * 255.f);
 			unsigned int green = (unsigned int)std::round(color.g * 255.f);

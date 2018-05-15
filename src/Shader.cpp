@@ -135,12 +135,8 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, bool print, int currBounce, i
 		if (reflection > 0 && currBounce < maxBounce) { reflection_color = Shader::getColor(scene, reflection_ray, true, currBounce + 1, maxBounce, "Reflection"); }
 	}
 	
-	//delete(ray);
-	//delete(intersection);
-
-	final_color.r = std::min(std::max(final_color.r, 0.f), 1.0f);
-	final_color.g = std::min(std::max(final_color.g, 0.f), 1.0f);
-	final_color.b = std::min(std::max(final_color.b, 0.f), 1.0f);
+	delete(ray);
+	delete(intersection);
 
 	return final_color;
 }
