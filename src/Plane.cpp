@@ -6,11 +6,16 @@ using namespace Objects;
 
 Plane::Plane() {
 	normal = glm::vec3(0.f);
-	distance = 0.f;}
+	distance = 0.f;
+
+	InverseMatrix = glm::mat4(1.f);
+}
 
 Plane::Plane(glm::vec3 _normal, float _distance) {
 	normal = _normal;
 	distance = _distance;
+
+	InverseMatrix = glm::mat4(1.f);
 }
 
 std::string Plane::type() {

@@ -104,7 +104,16 @@ Intersection* Scene::getFirstIntersection(Ray* ray) {
 
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		Object* o = objects[i];
-		t = o->getFirstCollision(ray);
+
+		Ray* object_ray = new Ray();
+
+		glm::vec4 temp = o->InverseMatrix * glm::vec4(ray->d, 0.f);
+		object_ray->d = glm::vec3(temp);
+
+		temp = o->InverseMatrix * glm::vec4(ray->origin, 1.f);
+		object_ray->origin = glm::vec3(temp);
+
+		t = o->getFirstCollision(object_ray);
 
 		if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
 			nearest_t = t;

@@ -71,7 +71,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, bool print, int currBounce, i
 			reflection_ray = new Ray();
 			// Calculate reflection ray
 
-			glm::vec3 normal = intersection->object->getNormal(intersection->position);
+			glm::vec3 normal = intersection->getNormal(intersection->position);
 
 			reflection_ray->d = ray->d - 2 * glm::dot(ray->d, normal) * normal;
 			reflection_ray->origin = intersection->position + reflection_ray->d * Globals::EPSILON;
@@ -91,7 +91,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, bool print, int currBounce, i
 			refraction_ray = new Ray();
 			// Calculate refraction ray
 
-			glm::vec3 normal = intersection->object->getNormal(intersection->position);
+			glm::vec3 normal = intersection->getNormal(intersection->position);
 			float n1, n2;
 
 			float d_dot_n = glm::dot(ray->d, normal);
@@ -174,7 +174,7 @@ glm::vec3 Shader::getAmbient(Object* object) {
 glm::vec3 Shader::getDiffuse(Intersection* intersection, Light* light) {
 	glm::vec3 color = glm::vec3(0.f);
 
-	glm::vec3 N = intersection->object->getNormal(intersection->position);
+	glm::vec3 N = intersection->getNormal(intersection->position);
 	glm::vec3 L = glm::normalize(light->location - intersection->position);
 
 	float NdotL = std::max(glm::dot(N, L), 0.f);
@@ -194,7 +194,7 @@ glm::vec3 Shader::getDiffuse(Intersection* intersection, Light* light) {
 glm::vec3 Shader::getSpecular(Intersection* intersection, Light* light) {
 	glm::vec3 color = glm::vec3(0.f);
 
-	glm::vec3 N = intersection->object->getNormal(intersection->position);
+	glm::vec3 N = intersection->getNormal(intersection->position);
 
 	glm::vec3 L = glm::normalize(light->location - intersection->position);
 	glm::vec3 V = -intersection->ray->d;

@@ -7,12 +7,16 @@ Triangle::Triangle() {
 	a = glm::vec3();
 	b = glm::vec3();
 	c = glm::vec3();
+
+	InverseMatrix = glm::mat4(1.f);
 }
 
 Triangle::Triangle(glm::vec3 _a, glm::vec3 _b, glm::vec3 _c) {
 	a = _a;
 	b = _b;
 	c = _c;
+
+	InverseMatrix = glm::mat4(1.f);
 }
 
 std::string Triangle::type() {
@@ -33,6 +37,8 @@ void Triangle::print() {
 }
 
 float Triangle::getFirstCollision(Ray* ray) {
+	// NEED TO OPTIMIZE
+	
 	float t, gamma, beta, alpha, determinant_a = 0.f;
 	glm::mat4 m_a, m_gamma, m_beta, m_t;
 
