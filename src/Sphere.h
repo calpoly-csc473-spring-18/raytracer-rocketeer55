@@ -6,6 +6,7 @@
 namespace Objects {
 	struct Sphere : public Object {
 		glm::vec3 center;
+		glm::mat4 ModelMatrix, InverseModelMatrix, NormalMatrix;
 		float radius;
 
 		Sphere();
@@ -15,6 +16,13 @@ namespace Objects {
 		void print();
 		float getFirstCollision(Ray *ray);
 		glm::vec3 getNormal(glm::vec3 point);
+
+		void applyTranslate(glm::vec3 translate);
+		void applyScale(glm::vec3 scale);
+		void applyRotation(glm::vec3 rotate);
+
+		void calculateInverseModelMatrix();
+		void calculateNormalMatrix();
 	};
 }
 

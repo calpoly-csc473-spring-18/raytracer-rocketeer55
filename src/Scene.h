@@ -13,7 +13,9 @@ struct Scene {
 	std::vector<Light*> lights;
 	std::vector<Object*> objects;
 
-	int width, height;
+	int width, height, s;
+	bool ss, fresnel, beers;
+
 
 	Scene();
 

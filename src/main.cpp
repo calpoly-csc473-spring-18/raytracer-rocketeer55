@@ -6,7 +6,7 @@ using namespace Objects;
 std::stringstream buffer;
 Scene* scene;
 
-int x, y, mode;
+int mode, x, y;
 
 int parseArgs(int &argc, char *argv[]) {
 	if (argc < 3) {
@@ -42,6 +42,24 @@ int parseArgs(int &argc, char *argv[]) {
 		}
 		scene->width = atoi(argv[3]);
 		scene->height = atoi(argv[4]);
+		for (int i = 5; i < argc; i++) {
+			if (argv[i][0] == '-') {
+				// It's a flag!
+
+				if (argv[i][1] == 's' && argv[i][2] == 's' && argv[i][3] == '=') {
+					// It's SS!
+					scene->s = argv[i][4] - '0';
+					scene->ss = true;
+				}
+				else if (std::string(argv[i]).compare("-fresnel") == 0) {
+					// fresnel!
+					scene->fresnel = true;
+				}
+				else if (std::string(argv[i]).compare("-beers") == 0) {
+					scene->beers = true;
+				}
+			}
+		}
 	}
 	else if (mode == PIXEL_RAY || mode == PRINT_RAYS) {
 		if (argc < 7) {
@@ -148,10 +166,6 @@ int main(int argc, char * argv[]) {
 	}
 	else if (mode == SCENE_INFO) {
 		scene->printSceneInfo();
-	}
-	else {
-		Ray* ray = new Ray(x, y, scene->width, scene->height, scene->camera);
-		ray->print();
 	}
 	delete(scene);
 

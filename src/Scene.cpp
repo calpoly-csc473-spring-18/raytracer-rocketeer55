@@ -10,6 +10,8 @@ Scene::Scene() {
 	camera = new Camera();
 
 	width = height = 0;
+	s = 1;
+	ss = fresnel = beers = false;
 }
 
 void Scene::printSceneInfo() {
@@ -52,7 +54,14 @@ void Scene::renderScene() {
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			color = Shader::getColor((Scene*)this, i, j, false);
+			color = glm::vec3(0.f);
+			for (int q = 0; q < s; q++) {
+				for (int r = 0; r < s; r++) {
+					color += Shader::getColor((Scene*)this, i, j, q, r, s, false);
+				}
+			}
+
+			color /= powf(s, 2);
 
 			color.r = std::min(std::max(color.r, 0.f), 1.0f);
 			color.g = std::min(std::max(color.g, 0.f), 1.0f);
@@ -70,7 +79,13 @@ void Scene::renderScene() {
 }
 
 void Scene::printPixelColor(int x, int y) {
-	glm::vec3 color = Shader::getColor((Scene*)this, x, y, false);
+	glm::vec3 color = glm::vec3(0.f);
+	for (int q = 0; q < s; q++) {
+		for (int r = 0; r < s; r++) {
+			color += Shader::getColor((Scene*)this, x, y, q, r, s, false);
+		}
+	}
+	color /= powf(s, 2);
 
 	unsigned int red = (unsigned int)std::round(color.r * 255.f);
 	unsigned int green = (unsigned int)std::round(color.g * 255.f);
@@ -79,7 +94,7 @@ void Scene::printPixelColor(int x, int y) {
 	std::cout << "Pixel: [" << x << ", " << y << "] ";
 	std::cout << "Color: (" << red << ", " << green << ", " << blue << ")" << std::endl;
 
-	color = Shader::getColor((Scene*)this, x, y, true);
+	color = Shader::getColor((Scene*)this, x, y, 0, 0, 0, true);
 }
 
 Intersection* Scene::getFirstIntersection(Ray* ray) {

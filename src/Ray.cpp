@@ -12,7 +12,7 @@ Ray::Ray() {
 	x = y = width = height = 0;
 }
 
-Ray::Ray(int _x, int _y, int _width, int _height, Camera* camera) {
+Ray::Ray(int _x, int _y, int _width, int _height, int q, int r, int s, Camera* camera) {
 	float U, V, W;
 	glm::vec3 u, v, w;
 
@@ -23,8 +23,8 @@ Ray::Ray(int _x, int _y, int _width, int _height, Camera* camera) {
 
 	origin = camera->location;
 
-	U = -0.5f + (x + 0.5f) / (float)width;
-	V = -0.5f + (y + 0.5f) / (float)height;
+	U = -0.5f + (s * x + q + 0.5f) / (float)(width * s);
+	V = -0.5f + (s * y + r + 0.5f) / (float)(height * s);
 	W = -1.f;
 
 	u = camera->right;

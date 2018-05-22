@@ -296,21 +296,30 @@ Sphere* Parse::load_sphere(std::stringstream & Stream)
 		}
 		else if (temp.compare("translate") == 0) {
 			// TRANSLATE!
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+			Stream.unget();
 
-			// Not yet implemented
-			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+			glm::vec3 translate = Parse::Vector(Stream);
+
+			sphere->applyTranslate(translate);
 		}
 		else if (temp.compare("scale") == 0) {
 			// SCALE!
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+			Stream.unget();
 
-			// Not yet implemented
-			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+			glm::vec3 scale = Parse::Vector(Stream);
+
+			sphere->applyScale(scale);
 		}
 		else if (temp.compare("rotate") == 0) {
 			// ROTATE!
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+			Stream.unget();
 
-			// Not yet implemented
-			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '>');
+			glm::vec3 rotate = Parse::Vector(Stream);
+
+			sphere->applyRotation(rotate);
 		}
 		else {
 			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;
@@ -318,6 +327,9 @@ Sphere* Parse::load_sphere(std::stringstream & Stream)
 
 		Stream >> temp;
 	}
+	sphere->calculateInverseModelMatrix();
+	sphere->calculateNormalMatrix();
+
 	return sphere;
 }
 
