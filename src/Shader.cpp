@@ -47,7 +47,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, int currBounce, int maxBounce
 
 	float fresnel = Shader::getFresnel(intersection, scene);
 
-	float local_contribution = (1 - filter) * (1 - reflection);
+	float local_contribution = (1 - reflection) * (1 - filter);
 	float reflection_contribution = (1 - filter) * reflection + filter * fresnel;
 	float refraction_contribution = filter * (1 - fresnel);
 
@@ -173,12 +173,19 @@ glm::vec3 Shader::getRefraction(Intersection* intersection, Scene* scene, int cu
 		refraction_ray->origin = intersection->position + refraction_ray->d * Globals::EPSILON;
 
 		// Get refraction color recursively
+		glm::vec3 beer = Shader::getBeer(intersection, scene, refraction_ray);
+
 		refraction_color = Shader::getColor(scene, refraction_ray, currBounce + 1, maxBounce, "Refraction");
 
 		// Multiply refraction color by object pigment color
 		refraction_color.x *= intersection->object->pigment.r;
 		refraction_color.y *= intersection->object->pigment.g;
 		refraction_color.z *= intersection->object->pigment.b;
+
+		// Multiply refraction color by Beer's law value
+		refraction_color.x *= beer.x;
+		refraction_color.y *= beer.y;
+		refraction_color.z *= beer.z;
 	}
 
 	else {
@@ -215,4 +222,34 @@ float Shader::getFresnel(Intersection* intersection, Scene* scene) {
 	fresnel = F_0 + (1 - F_0) * powf(1 - n_dot_v, 5);
 
 	return fresnel;
+}
+
+glm::vec3 Shader::getBeer(Intersection* intersection, Scene* scene, Ray* refraction_ray) {
+	glm::vec3 absorbance = glm::vec3();
+	glm::vec3 attenuation = glm::vec3(1.f);
+
+	if (!scene->beers) {
+		return attenuation;
+	}
+
+	Intersection* feeler;
+	feeler = scene->getFirstIntersection(refraction_ray);
+
+	if (!feeler) {
+		std::cerr << "Beer's law ray hit nothing... uh oh" << std::endl;
+		return attenuation;
+	}
+
+	float distance = glm::distance(intersection->position, feeler->position);
+	glm::vec3 local_color = Shader::getLocal(intersection, scene);
+
+	absorbance.x = (1 - local_color.x) * Globals::BEERS_ALPHA * -distance;
+	absorbance.y = (1 - local_color.y) * Globals::BEERS_ALPHA * -distance;
+	absorbance.z = (1 - local_color.z) * Globals::BEERS_ALPHA * -distance;
+
+	attenuation.x = expf(absorbance.x);
+	attenuation.y = expf(absorbance.y);
+	attenuation.z = expf(absorbance.z);
+
+	return attenuation;
 }

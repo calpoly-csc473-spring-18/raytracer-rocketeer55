@@ -18,6 +18,7 @@ namespace Shader {
 	glm::vec3 getRefraction(Intersection* intersection, Scene* scene, int currBounce, int maxBounce);
 
 	float getFresnel(Intersection* intersection, Scene* scene);
+	glm::vec3 getBeer(Intersection* intersection, Scene* scene, Ray* refraction_ray);
 }
 
 #endif

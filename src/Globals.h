@@ -16,6 +16,8 @@ namespace Globals
 
 	static const float EPSILON = 0.001f;
 
+	static const float BEERS_ALPHA = 0.15;
+
 	static std::string filename;
 	static const std::string outfilename = "output.png";
 }
