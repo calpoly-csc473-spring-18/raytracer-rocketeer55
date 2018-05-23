@@ -17,6 +17,8 @@ namespace Objects {
 		int ID;
 
 		glm::mat4 InverseMatrix;
+
+		virtual ~Object() {};
 		
 		virtual std::string type() = 0;
 		virtual void print() = 0;

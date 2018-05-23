@@ -19,6 +19,8 @@ struct Scene {
 
 	Scene();
 
+	~Scene();
+
 	void printSceneInfo();
 	void renderScene();
 	void printPixelColor(int x, int y);

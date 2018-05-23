@@ -4,7 +4,6 @@
 Intersection::Intersection() {
 	position = glm::vec3(0.f);
 	color = glm::vec3(0.f);
-	ray = new Ray();
 	t = 0.f;
 	object = NULL;
 }

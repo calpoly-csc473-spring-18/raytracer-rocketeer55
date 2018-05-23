@@ -167,6 +167,7 @@ int main(int argc, char * argv[]) {
 	else if (mode == SCENE_INFO) {
 		scene->printSceneInfo();
 	}
+
 	delete(scene);
 
 	return EXIT_SUCCESS;

@@ -25,6 +25,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, int currBounce, int maxBounce
 	if (!intersection) {
 		// Doesn't hit an object - return 0 color
 
+		delete(ray);
 		return final_color;
 	}
 

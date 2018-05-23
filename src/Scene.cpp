@@ -7,11 +7,21 @@
 #include <algorithm>
 
 Scene::Scene() {
-	camera = new Camera();
-
 	width = height = 0;
 	s = 1;
 	ss = fresnel = beers = false;
+}
+
+Scene::~Scene() {
+	delete(camera);
+
+	for (unsigned int i = 0; i < lights.size(); i++) {
+		delete(lights[i]);
+	}
+
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		delete(objects[i]);
+	}
 }
 
 void Scene::printSceneInfo() {
@@ -76,6 +86,7 @@ void Scene::renderScene() {
 	}
 
 	image->writeToFile(Globals::outfilename);
+	delete(image);
 }
 
 void Scene::printPixelColor(int x, int y) {
@@ -119,12 +130,15 @@ Intersection* Scene::getFirstIntersection(Ray* ray) {
 			nearest_t = t;
 			nearest = o;
 		}
+
+		delete(object_ray);
 	}
 
 	if (nearest) {
 		// There was an intersection!
 		intersection = new Intersection(ray, nearest_t, nearest);
 	}
+
 	return intersection;
 }
 
@@ -134,9 +148,15 @@ bool Scene::isInShadow(Intersection* intersection, Light* light) {
 
 	Intersection* shadowIntersection = getFirstIntersection(shadow_ray);	
 
-	if (!shadowIntersection || shadowIntersection->t > glm::distance(shadow_ray->origin, light->location)) {
+	if (!shadowIntersection) {
 		// No intersection or intersection after light
 		delete(shadow_ray);
+		return false;
+	}
+
+	if (shadowIntersection->t > glm::distance(shadow_ray->origin, light->location)) {
+		delete(shadow_ray);
+		delete(shadowIntersection);
 		return false;
 	}
 
