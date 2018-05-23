@@ -33,7 +33,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray* ray, int currBounce, int maxBounce
 	float reflection = intersection->object->finish.reflection;
 	float filter = intersection->object->pigment.f;
 
-	if ((reflection > 0.f || filter > 0.f) && currBounce < maxBounce) {
+	if ((reflection > 0.f || (filter > 0.f && scene->fresnel)) && currBounce < maxBounce) {
 		// Add reflection!
 
 		reflection_color = Shader::getReflection(intersection, scene, currBounce, maxBounce);
@@ -177,15 +177,19 @@ glm::vec3 Shader::getRefraction(Intersection* intersection, Scene* scene, int cu
 
 		refraction_color = Shader::getColor(scene, refraction_ray, currBounce + 1, maxBounce, "Refraction");
 
-		// Multiply refraction color by object pigment color
-		refraction_color.x *= intersection->object->pigment.r;
-		refraction_color.y *= intersection->object->pigment.g;
-		refraction_color.z *= intersection->object->pigment.b;
+		if (!scene->beers) {
+			// Multiply refraction color by object pigment color
+			refraction_color.x *= intersection->object->pigment.r;
+			refraction_color.y *= intersection->object->pigment.g;
+			refraction_color.z *= intersection->object->pigment.b;
+		}
 
-		// Multiply refraction color by Beer's law value
-		refraction_color.x *= beer.x;
-		refraction_color.y *= beer.y;
-		refraction_color.z *= beer.z;
+		else {
+			// Multiply refraction color by Beer's law value
+			refraction_color.x *= beer.x;
+			refraction_color.y *= beer.y;
+			refraction_color.z *= beer.z;
+		}
 	}
 
 	else {
@@ -198,8 +202,10 @@ glm::vec3 Shader::getRefraction(Intersection* intersection, Scene* scene, int cu
 		refraction_ray->d = glm::normalize((n1/n2) * (intersection->ray->d - d_dot_n * N) - N * sqrtf(1 - powf(n1/n2, 2) * (1 - powf(d_dot_n, 2))));
 		refraction_ray->origin = intersection->position + refraction_ray->d * Globals::EPSILON;
 
+
 		// Get refraction color recursively
 		refraction_color = Shader::getColor(scene, refraction_ray, currBounce + 1, maxBounce, "Refraction");
+
 	}
 
 	return refraction_color;
@@ -241,15 +247,16 @@ glm::vec3 Shader::getBeer(Intersection* intersection, Scene* scene, Ray* refract
 	}
 
 	float distance = glm::distance(intersection->position, feeler->position);
-	glm::vec3 local_color = Shader::getLocal(intersection, scene);
 
-	absorbance.x = (1 - local_color.x) * Globals::BEERS_ALPHA * -distance;
-	absorbance.y = (1 - local_color.y) * Globals::BEERS_ALPHA * -distance;
-	absorbance.z = (1 - local_color.z) * Globals::BEERS_ALPHA * -distance;
+	absorbance.x = (1 - intersection->object->pigment.r) * Globals::BEERS_ALPHA * -distance;
+	absorbance.y = (1 - intersection->object->pigment.g) * Globals::BEERS_ALPHA * -distance;
+	absorbance.z = (1 - intersection->object->pigment.b) * Globals::BEERS_ALPHA * -distance;
 
 	attenuation.x = expf(absorbance.x);
 	attenuation.y = expf(absorbance.y);
 	attenuation.z = expf(absorbance.z);
+
+	delete(feeler);
 
 	return attenuation;
 }
