@@ -17,7 +17,7 @@ struct Intersection {
 	Intersection(Ray* ray, float t, Object* object);
 
 	void print();
-	glm::vec3 getNormal(glm::vec3 point);
+	glm::vec3 getNormal();
 };
 
 #endif

@@ -57,7 +57,7 @@ void Scene::renderScene() {
 			color = glm::vec3(0.f);
 			for (int q = 0; q < s; q++) {
 				for (int r = 0; r < s; r++) {
-					color += Shader::getColor((Scene*)this, i, j, q, r, s, false);
+					color += Shader::getColor((Scene*)this, i, j, q, r, s);
 				}
 			}
 
@@ -82,7 +82,7 @@ void Scene::printPixelColor(int x, int y) {
 	glm::vec3 color = glm::vec3(0.f);
 	for (int q = 0; q < s; q++) {
 		for (int r = 0; r < s; r++) {
-			color += Shader::getColor((Scene*)this, x, y, q, r, s, false);
+			color += Shader::getColor((Scene*)this, x, y, q, r, s);
 		}
 	}
 	color /= powf(s, 2);
@@ -94,7 +94,7 @@ void Scene::printPixelColor(int x, int y) {
 	std::cout << "Pixel: [" << x << ", " << y << "] ";
 	std::cout << "Color: (" << red << ", " << green << ", " << blue << ")" << std::endl;
 
-	color = Shader::getColor((Scene*)this, x, y, 0, 0, 0, true);
+	color = Shader::getColor((Scene*)this, x, y, 0, 0, 0);
 }
 
 Intersection* Scene::getFirstIntersection(Ray* ray) {

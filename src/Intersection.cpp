@@ -26,9 +26,9 @@ void Intersection::print() {
 	std::cout << "Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << std::endl;
 }
 
-glm::vec3 Intersection::getNormal(glm::vec3 point) {
-	glm::vec3 new_point = object->InverseMatrix * glm::vec4(point, 1.0f);
+glm::vec3 Intersection::getNormal() {
+	glm::vec3 new_point = object->InverseMatrix * glm::vec4(position, 1.0f);
+	glm::vec3 normal = glm::transpose(object->InverseMatrix) * glm::vec4(object->getNormal(new_point), 0.f);
 
-
-	return glm::normalize(glm::vec3(glm::transpose(object->InverseMatrix) * glm::vec4(object->getNormal(new_point), 0.f)));
+	return glm::normalize(normal);
 }

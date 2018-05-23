@@ -5,155 +5,55 @@
 #include "Ray.h"
 #include "Globals.h"
 
-glm::vec3 Shader::getColor(Scene* scene, int i, int j, int q, int r, int s, bool print) {
+glm::vec3 Shader::getColor(Scene* scene, int i, int j, int q, int r, int s) {
 	Ray* ray = new Ray(i, j, scene->width, scene->height, q, r, s, scene->camera);
 
 	int currBounce = 0;
 	int maxBounce = Globals::MAX_BOUNCE;
 
-	return Shader::getColor(scene, ray, print, currBounce, maxBounce, "Primary");
+	return Shader::getColor(scene, ray, currBounce, maxBounce, "Primary");
 }
 
-glm::vec3 Shader::getColor(Scene* scene, Ray* ray, bool print, int currBounce, int maxBounce, std::string iterationType) {
+glm::vec3 Shader::getColor(Scene* scene, Ray* ray, int currBounce, int maxBounce, std::string iterationType) {
 	glm::vec3 final_color = glm::vec3(0.f);
-	glm::vec3 local_color = glm::vec3(0.f);
 
-	glm::vec3 ambient_color = glm::vec3(0.f);
-	glm::vec3 diffuse_color = glm::vec3(0.f);
-	glm::vec3 specular_color = glm::vec3(0.f);
-
-	glm::vec3 reflection_color = glm::vec3(0.f);
-	glm::vec3 refraction_color = glm::vec3(0.f);
-
-	Ray* reflection_ray;
-	Ray* refraction_ray;
-
-	float reflection = 0, refraction = 0, filter = 0, fresnel = 0;
-
-	if (print) {
-		std::cout << "----" << std::endl;
-		std::cout << "Iteration type: " << iterationType << std::endl;
-		ray->print();
-	}
+	glm::vec3 local_color, reflection_color, refraction_color;
 
 	// Get first collision
 	Intersection* intersection = scene->getFirstIntersection(ray);
 
-	if (intersection) {
-		// Hits an object = calculate color!
+	if (!intersection) {
+		// Doesn't hit an object - return 0 color
 
-		if (print) {
-			intersection->print();
-		}
-
-		reflection = intersection->object->finish.reflection;
-		refraction = intersection->object->finish.refraction;
-		filter = intersection->object->pigment.f;
-
-		// Add ambient
-		ambient_color = Shader::getAmbient(intersection->object);
-
-		for (unsigned int i = 0; i < scene->lights.size(); i++) {
-			Light* light = scene->lights[i];
-
-			// Check if it's not in a shadow
-			if (!scene->isInShadow(intersection, light)) {
-				// Add diffuse
-				diffuse_color = Shader::getDiffuse(intersection, light);
-				// Add specular
-				specular_color = Shader::getSpecular(intersection, light);
-			}
-		}
-
-		if (reflection > 0 && currBounce < maxBounce) {
-			// Add reflection!
-
-			reflection_ray = new Ray();
-			// Calculate reflection ray
-
-			glm::vec3 normal = intersection->getNormal(intersection->position);
-
-			reflection_ray->d = ray->d - 2 * glm::dot(ray->d, normal) * normal;
-			reflection_ray->origin = intersection->position + reflection_ray->d * Globals::EPSILON;
-
-			// Get reclection color recursively
-			reflection_color = Shader::getColor(scene, reflection_ray, false, currBounce + 1, maxBounce, "Reflection");
-
-			// Multiply reflection color by object pigment color
-			reflection_color.x *= intersection->object->pigment.r;
-			reflection_color.y *= intersection->object->pigment.g;
-			reflection_color.z *= intersection->object->pigment.b;
-		}
-
-		if ((refraction > 0 || filter > 0) && currBounce < maxBounce) {
-			// Add refraction!
-
-			refraction_ray = new Ray();
-			// Calculate refraction ray
-
-			glm::vec3 normal = intersection->getNormal(intersection->position);
-			float n1, n2;
-
-			float d_dot_n = glm::dot(ray->d, normal);
-			if (d_dot_n < 0) {
-				// Going into object
-				n1 = 1.f;
-				n2 = intersection->object->finish.ior;
-			}
-			else {
-				// Leaving object
-				normal = -normal;
-				n1 = intersection->object->finish.ior;
-				n2 = 1.f;
-				d_dot_n = glm::dot(ray->d, normal);
-			}
-
-			if (scene->fresnel) {
-				// Calculate fresnel
-
-				float n_dot_v = glm::dot(normal, -ray->d);
-
-				float F_0 = powf(intersection->object->finish.ior - 1, 2) / powf(intersection->object->finish.ior + 1, 2);
-				fresnel = F_0 + (1 - F_0) * powf(1 - n_dot_v, 5);
-			}
-			
-			refraction_ray->d = (n1/n2) * (ray->d - d_dot_n * normal) - normal * sqrtf(1 - powf(n1/n2, 2) * (1 - powf(d_dot_n, 2)));
-			refraction_ray->origin = intersection->position + refraction_ray->d * Globals::EPSILON;
-
-			// Get refraction color recursively
-			refraction_color = Shader::getColor(scene, refraction_ray, false, currBounce + 1, maxBounce, "Refraction");
-
-			// Multiply refraction color by object pigment color
-			refraction_color.x *= intersection->object->pigment.r;
-			refraction_color.y *= intersection->object->pigment.g;
-			refraction_color.z *= intersection->object->pigment.b;
-		}
+		return final_color;
 	}
 
-	local_color = (ambient_color + diffuse_color + specular_color) * (1 - filter) * (1 - reflection);
+	local_color = getLocal(intersection, scene);
 
-	if (scene->fresnel) {
-		reflection_color *= (((1 - filter) * reflection) + (filter * fresnel));
-		refraction_color *= (filter * (1 - fresnel));
+	float reflection = intersection->object->finish.reflection;
+	float filter = intersection->object->pigment.f;
+
+	if ((reflection > 0.f || filter > 0.f) && currBounce < maxBounce) {
+		// Add reflection!
+
+		reflection_color = Shader::getReflection(intersection, scene, currBounce, maxBounce);
 	}
-	else {
-		reflection_color *= ((1 - filter) * reflection);
-		refraction_color *= filter;
+
+	if (filter > 0.f && currBounce < maxBounce) {
+		// Add refraction!
+
+		refraction_color = Shader::getRefraction(intersection, scene, currBounce, maxBounce);
 	}
 
-	final_color = local_color + reflection_color + refraction_color;
+	float fresnel = Shader::getFresnel(intersection, scene);
 
-	if (print) {
-		std::cout << "Final Color: {" << final_color.x << " " << final_color.y << " " << final_color.z << "}" << std::endl;
-		std::cout << "Ambient: {" << ambient_color.x << " " << ambient_color.y << " " << ambient_color.z << "}" << std::endl;
-		std::cout << "Diffuse: {" << diffuse_color.x << " " << diffuse_color.y << " " << diffuse_color.z << "}" << std::endl;
-		std::cout << "Specular: {" << specular_color.x << " " << specular_color.y << " " << specular_color.z << "}" << std::endl;
-		std::cout << "Reflection: {" << reflection_color.x << " " << reflection_color.y << " " << reflection_color.z << "}" << std::endl;
-		std::cout << "Refraction: {" << refraction_color.x << " " << refraction_color.y << " " << refraction_color.z << "}" << std::endl;
-		std::cout << "Contributions: " << (1 - reflection - refraction) << " Local, " << reflection << " Reflection, " << refraction << " Transmission" << std::endl;
+	float local_contribution = (1 - filter) * (1 - reflection);
+	float reflection_contribution = (1 - filter) * reflection + filter * fresnel;
+	float refraction_contribution = filter * (1 - fresnel);
 
-		if (reflection > 0 && currBounce < maxBounce) { reflection_color = Shader::getColor(scene, reflection_ray, true, currBounce + 1, maxBounce, "Reflection"); }
-	}
+	final_color += local_color * local_contribution;
+	final_color += reflection_color * reflection_contribution;
+	final_color += refraction_color * refraction_contribution;
 	
 	delete(ray);
 	delete(intersection);
@@ -174,7 +74,7 @@ glm::vec3 Shader::getAmbient(Object* object) {
 glm::vec3 Shader::getDiffuse(Intersection* intersection, Light* light) {
 	glm::vec3 color = glm::vec3(0.f);
 
-	glm::vec3 N = intersection->getNormal(intersection->position);
+	glm::vec3 N = intersection->getNormal();
 	glm::vec3 L = glm::normalize(light->location - intersection->position);
 
 	float NdotL = std::max(glm::dot(N, L), 0.f);
@@ -194,7 +94,7 @@ glm::vec3 Shader::getDiffuse(Intersection* intersection, Light* light) {
 glm::vec3 Shader::getSpecular(Intersection* intersection, Light* light) {
 	glm::vec3 color = glm::vec3(0.f);
 
-	glm::vec3 N = intersection->getNormal(intersection->position);
+	glm::vec3 N = intersection->getNormal();
 
 	glm::vec3 L = glm::normalize(light->location - intersection->position);
 	glm::vec3 V = -intersection->ray->d;
@@ -214,4 +114,105 @@ glm::vec3 Shader::getSpecular(Intersection* intersection, Light* light) {
 	color.b = Ks.b * powf(HdotN, alpha) * light->pigment.b;
 
 	return color;
+}
+
+glm::vec3 Shader::getLocal(Intersection* intersection, Scene* scene) {
+	glm::vec3 local_color = glm::vec3(0.f);
+
+	local_color += Shader::getAmbient(intersection->object);
+
+	for (unsigned int i = 0; i < scene->lights.size(); i++) {
+		if (!scene->isInShadow(intersection, scene->lights[i])) {
+
+			local_color += Shader::getDiffuse(intersection, scene->lights[i]);
+			local_color += Shader::getSpecular(intersection, scene->lights[i]);
+		}
+	}
+
+	return local_color;
+}
+
+glm::vec3 Shader::getReflection(Intersection* intersection, Scene* scene, int currBounce, int maxBounce) {
+	glm::vec3 reflection_color = glm::vec3(0.f);
+
+	Ray* reflection_ray = new Ray();
+	// Calculate reflection ray
+
+	glm::vec3 N = intersection->getNormal();
+
+	reflection_ray->d = intersection->ray->d - 2 * glm::dot(intersection->ray->d, N) * N;
+	reflection_ray->origin = intersection->position + reflection_ray->d * Globals::EPSILON;
+
+	// Get reclection color recursively
+	reflection_color = Shader::getColor(scene, reflection_ray, currBounce + 1, maxBounce, "Reflection");
+
+	// Multiply reflection color by object pigment color
+	reflection_color.x *= intersection->object->pigment.r;
+	reflection_color.y *= intersection->object->pigment.g;
+	reflection_color.z *= intersection->object->pigment.b;
+
+	return reflection_color;
+}
+
+glm::vec3 Shader::getRefraction(Intersection* intersection, Scene* scene, int currBounce, int maxBounce) {
+	glm::vec3 refraction_color = glm::vec3(0.f);
+
+	Ray* refraction_ray = new Ray();
+	// Calculate refraction ray
+
+	glm::vec3 N = intersection->getNormal();
+	float n1, n2;
+
+	float d_dot_n = glm::dot(intersection->ray->d, N);
+	if (d_dot_n < 0) {
+		// Going into object
+		n1 = 1.f;
+		n2 = intersection->object->finish.ior;
+
+		refraction_ray->d = glm::normalize((n1/n2) * (intersection->ray->d - d_dot_n * N) - N * sqrtf(1 - powf(n1/n2, 2) * (1 - powf(d_dot_n, 2))));
+		refraction_ray->origin = intersection->position + refraction_ray->d * Globals::EPSILON;
+
+		// Get refraction color recursively
+		refraction_color = Shader::getColor(scene, refraction_ray, currBounce + 1, maxBounce, "Refraction");
+
+		// Multiply refraction color by object pigment color
+		refraction_color.x *= intersection->object->pigment.r;
+		refraction_color.y *= intersection->object->pigment.g;
+		refraction_color.z *= intersection->object->pigment.b;
+	}
+
+	else {
+		// Leaving object
+		N = -N;
+		n1 = intersection->object->finish.ior;
+		n2 = 1.f;
+		d_dot_n = glm::dot(intersection->ray->d, N);
+
+		refraction_ray->d = glm::normalize((n1/n2) * (intersection->ray->d - d_dot_n * N) - N * sqrtf(1 - powf(n1/n2, 2) * (1 - powf(d_dot_n, 2))));
+		refraction_ray->origin = intersection->position + refraction_ray->d * Globals::EPSILON;
+
+		// Get refraction color recursively
+		refraction_color = Shader::getColor(scene, refraction_ray, currBounce + 1, maxBounce, "Refraction");
+	}
+
+	return refraction_color;
+}
+
+float Shader::getFresnel(Intersection* intersection, Scene* scene) {
+	float fresnel = 0.f;
+	if (!scene->fresnel) {
+		return fresnel;
+	}
+
+	float ior = intersection->object->finish.ior;
+	float F_0 = powf(ior - 1, 2) / powf(ior + 1, 2);
+
+	float n_dot_v = glm::dot(intersection->getNormal(), -intersection->ray->d);
+	if (n_dot_v < 0) {
+		n_dot_v *= -1;
+	}
+
+	fresnel = F_0 + (1 - F_0) * powf(1 - n_dot_v, 5);
+
+	return fresnel;
 }
