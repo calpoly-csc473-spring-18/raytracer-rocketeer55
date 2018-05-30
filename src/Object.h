@@ -14,7 +14,6 @@ namespace Objects {
 
 		Pigment pigment;
 		Finish finish;
-		int ID;
 
 		glm::mat4 InverseMatrix;
 
