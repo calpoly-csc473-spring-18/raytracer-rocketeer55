@@ -62,6 +62,10 @@ void Scene::renderScene() {
 	Image* image = new Image(width, height);
 	glm::vec3 color;
 
+	if (sds) {
+		initSDS();
+	}
+
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			color = glm::vec3(0.f);
@@ -109,6 +113,56 @@ void Scene::printPixelColor(int x, int y) {
 }
 
 Intersection* Scene::getFirstIntersection(Ray* ray) {
+	if (sds) {
+		Intersection* sds = getFirstIntersectionSDS(root, ray);
+
+		Intersection* intersection = NULL;
+		Object* nearest = NULL;
+		float t = 0, nearest_t = -1;
+
+		for (unsigned int i = 0; i < planes.size(); i++) {
+			Object* o = planes[i];
+
+			Ray* object_ray = new Ray();
+
+			glm::vec4 temp = o->InverseMatrix * glm::vec4(ray->d, 0.f);
+			object_ray->d = glm::vec3(temp);
+
+			temp = o->InverseMatrix * glm::vec4(ray->origin, 1.f);
+			object_ray->origin = glm::vec3(temp);
+
+			t = o->getFirstCollision(object_ray);
+
+			if (t != -1 && (nearest_t == -1 || t < nearest_t)) {
+				nearest_t = t;
+				nearest = o;
+			}
+
+			delete(object_ray);
+		}
+
+		if (nearest) {
+			// There was an intersection!
+			intersection = new Intersection(ray, nearest_t, nearest);
+		}
+		else {
+			return sds;
+		}
+
+		if (!sds) {
+			return intersection;
+		}
+
+		if (sds->t < intersection->t) {
+			delete(intersection);
+			return sds;
+		}
+		else {
+			delete(sds);
+			return intersection;
+		}
+	}
+
 	Intersection* intersection = NULL;
 	Object* nearest = NULL;
 	float t = 0, nearest_t = -1;
@@ -142,6 +196,77 @@ Intersection* Scene::getFirstIntersection(Ray* ray) {
 	return intersection;
 }
 
+Intersection* Scene::getFirstIntersectionSDS(BVH_Node* node, Ray* ray) {
+	Intersection* intersection = NULL;
+
+	if (!node->box->intersects(ray)) {
+		// Ray doesn't intersect this bounding box
+		return intersection;
+	}
+
+	// Ray does hit bounding box!
+
+	if (node->object) {
+		// Node has an object - which means it has no left / right
+		Ray* object_ray = new Ray();
+
+		glm::vec4 temp = node->object->InverseMatrix * glm::vec4(ray->d, 0.f);
+		object_ray->d = glm::vec3(temp);
+
+		temp = node->object->InverseMatrix * glm::vec4(ray->origin, 1.f);
+		object_ray->origin = glm::vec3(temp);
+
+		float t = node->object->getFirstCollision(object_ray);
+
+		delete(object_ray);
+
+		if (t == -1) {
+			// Object Ray doesn't hit object :/
+			return intersection;
+		}
+		// We hit an object!
+		return new Intersection(ray, t, node->object);
+	}
+
+	// No object in node - compare left and right
+	Intersection* left = NULL;
+	Intersection* right = NULL;
+
+	if (node->left) {
+		// left node exists
+		left = getFirstIntersectionSDS(node->left, ray);
+	}
+	if (node->right) {
+		// right node exists
+		right = getFirstIntersectionSDS(node->right, ray);
+	}
+
+	if (left) {
+		// Left node hits an object!
+		if (right) {
+			// Right node also hits an object! Let's JUDGE THEM
+			if (left->t < right->t) {
+				delete(right);
+				return left;
+			}
+			else {
+				delete(left);
+				return right;
+			}
+		}
+		else {
+			// Only left node hit!
+			return left;
+		}
+	}
+	if (right) {
+		// Only right node hit!
+		return right;
+	}
+	// Nothing hit!
+	return NULL;
+}
+
 bool Scene::isInShadow(Intersection* intersection, Light* light) {
 	Ray* shadow_ray = new Ray(intersection->position, light->location);
 	shadow_ray->origin = intersection->position + (glm::normalize(light->location - intersection->position)) * Globals::EPSILON;
@@ -164,4 +289,23 @@ bool Scene::isInShadow(Intersection* intersection, Light* light) {
 	delete(shadowIntersection);
 
 	return true;
+}
+
+void Scene::initSDS() {
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (objects[i]->type().compare("Plane") == 0) {
+			// is a plane - don't put it in sds
+			planes.push_back(objects[i]);
+		}
+		else {
+			objects_without_planes.push_back(objects[i]);
+		}
+	}
+
+	for (unsigned int i = 0; i < objects_without_planes.size(); i++) {
+		objects_without_planes[i]->calculateBoundingBox();
+	}
+
+	root = new BVH_Node();
+	root->buildTree(objects_without_planes, 0);
 }

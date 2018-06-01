@@ -14,6 +14,8 @@ namespace Objects {
 		void print();
 		float getFirstCollision(Ray *ray);
 		glm::vec3 getNormal(glm::vec3 point);
+
+		void calculateBoundingBox();
 	};
 }
 

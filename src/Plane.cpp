@@ -8,6 +8,7 @@ Plane::Plane() {
 	normal = glm::vec3(0.f);
 	distance = 0.f;
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
 }
 
@@ -15,6 +16,7 @@ Plane::Plane(glm::vec3 _normal, float _distance) {
 	normal = _normal;
 	distance = _distance;
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
 }
 
@@ -44,4 +46,9 @@ float Plane::getFirstCollision(Ray* ray) {
 
 glm::vec3 Plane::getNormal(glm::vec3 point) {
 	return normal;
+}
+
+void Plane::calculateBoundingBox() {
+	// Planes are unbounded
+	boundingBox = NULL;
 }

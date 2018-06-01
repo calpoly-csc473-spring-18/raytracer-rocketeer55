@@ -9,6 +9,7 @@ Box::Box() {
 	min = glm::vec3();
 	max = glm::vec3();
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
 }
 
@@ -16,6 +17,7 @@ Box::Box(glm::vec3 _min, glm::vec3 _max) {
 	min = _min;
 	max = _max;
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
 }
 
@@ -96,4 +98,13 @@ glm::vec3 Box::getNormal(glm::vec3 point) {
 
 	std::cerr << "Box -- No normal?" << std::endl;
 	return glm::vec3();
+}
+
+void Box::calculateBoundingBox() {
+	BoundingBox* box = new BoundingBox(min);
+	box->addPoint(max);
+
+	box->rotate(ModelMatrix);
+
+	boundingBox = box;
 }

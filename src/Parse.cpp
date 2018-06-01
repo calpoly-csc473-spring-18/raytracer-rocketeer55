@@ -342,6 +342,7 @@ Sphere* Parse::load_sphere(std::stringstream & Stream)
 		Stream >> temp;
 	}
 
+	sphere->ModelMatrix = ModelMatrix;
 	sphere->InverseMatrix = glm::inverse(ModelMatrix);
 
 	return sphere;
@@ -437,6 +438,7 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 		Stream >> temp;
 	}
 
+	plane->ModelMatrix = ModelMatrix;
 	plane->InverseMatrix = glm::inverse(ModelMatrix);
 
 	return plane;
@@ -532,6 +534,7 @@ Triangle* Parse::load_triangle(std::stringstream &Stream) {
 		Stream >> temp;
 	}
 
+	triangle->ModelMatrix = ModelMatrix;
 	triangle->InverseMatrix = glm::inverse(ModelMatrix);
 
 	return triangle;
@@ -620,6 +623,7 @@ Box* Parse::load_box(std::stringstream &Stream) {
 		Stream >> temp;
 	}
 
+	box->ModelMatrix = ModelMatrix;
 	box->InverseMatrix = glm::inverse(ModelMatrix);
 
 	return box;

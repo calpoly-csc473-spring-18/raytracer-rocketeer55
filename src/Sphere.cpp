@@ -72,3 +72,12 @@ float Sphere::getFirstCollision(Ray* ray) {
 glm::vec3 Sphere::getNormal(glm::vec3 point) {
 	return glm::normalize(point - center);
 }
+
+void Sphere::calculateBoundingBox() {
+	BoundingBox* box = new BoundingBox(center - glm::vec3(radius));
+	box->addPoint(center + glm::vec3(radius));
+
+	box->rotate(ModelMatrix);
+
+	boundingBox = box;
+}
