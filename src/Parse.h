@@ -9,6 +9,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Triangle.h"
+#include "Box.h"
 
 using namespace Objects;
 
@@ -25,6 +26,7 @@ public:
 	static Sphere* load_sphere(std::stringstream &Stream);
 	static Plane* load_plane(std::stringstream &Stream);
 	static Triangle* load_triangle(std::stringstream &Stream);
+	static Box* load_box(std::stringstream &Stream);
 };
 
 #endif

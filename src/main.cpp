@@ -58,6 +58,9 @@ int parseArgs(int &argc, char *argv[]) {
 				else if (std::string(argv[i]).compare("-beers") == 0) {
 					scene->beers = true;
 				}
+				else if (std::string(argv[i]).compare("-sds") == 0) {
+					scene->sds = true;
+				}
 			}
 		}
 	}
@@ -138,6 +141,11 @@ int parseFile() {
 			// is a triangle!
 
 			scene->objects.push_back(Parse::load_triangle(buffer));
+		}
+		else if (temp.compare("box") == 0) {
+			// is a box!
+
+			scene->objects.push_back(Parse::load_box(buffer));
 		}
 	}
 

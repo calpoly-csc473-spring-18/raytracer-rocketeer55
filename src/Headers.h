@@ -24,5 +24,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Ray.h"
+#include "Triangle.h"
+#include "Box.h"
 
 #endif

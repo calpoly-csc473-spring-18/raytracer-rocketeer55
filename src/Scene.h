@@ -14,11 +14,9 @@ struct Scene {
 	std::vector<Object*> objects;
 
 	int width, height, s;
-	bool ss, fresnel, beers;
-
+	bool ss, fresnel, beers, sds;
 
 	Scene();
-
 	~Scene();
 
 	void printSceneInfo();

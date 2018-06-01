@@ -536,3 +536,91 @@ Triangle* Parse::load_triangle(std::stringstream &Stream) {
 
 	return triangle;
 }
+
+Box* Parse::load_box(std::stringstream &Stream) {
+	Box* box = new Box();
+	std::string temp;
+
+	glm::mat4 ModelMatrix = glm::mat4(1.f);
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+
+	// Min!
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+	Stream.unget();
+
+	box->min = Parse::Vector(Stream);
+
+	// Max!
+
+	Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+	Stream.unget();
+
+	box->max = Parse::Vector(Stream);
+
+	Stream >> temp;
+	while (temp.compare("}") != 0) {
+		if (temp.compare("pigment") == 0) {
+			// PIGMENT!
+
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+
+			box->pigment = Parse::load_pigment(Stream);
+		}
+		else if (temp.compare("finish") == 0) {
+			// FINISH!
+
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '{');
+
+			box->finish = Parse::load_finish(Stream);
+		}
+		else if (temp.compare("translate") == 0) {
+			// TRANSLATE!
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+			Stream.unget();
+
+			glm::vec3 translate = Parse::Vector(Stream);
+
+			ModelMatrix = glm::translate(glm::mat4(1.f), translate) * ModelMatrix;
+		}
+		else if (temp.compare("scale") == 0) {
+			// SCALE!
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+			Stream.unget();
+
+			glm::vec3 scale = Parse::Vector(Stream);
+
+			ModelMatrix = glm::scale(glm::mat4(1.f), scale) * ModelMatrix;
+		}
+		else if (temp.compare("rotate") == 0) {
+			// ROTATE!
+			Stream.ignore(std::numeric_limits<std::streamsize>::max(), '<');
+			Stream.unget();
+
+			glm::vec3 rotate = Parse::Vector(Stream);
+
+			glm::mat4 Rotate = glm::mat4(1.f);
+			if (rotate.z != 0) {
+				Rotate = glm::rotate(glm::mat4(1.f), glm::radians(rotate.z), glm::vec3(0, 0, 1)) * Rotate;
+			}
+			if (rotate.y != 0) {
+				Rotate = glm::rotate(glm::mat4(1.f), glm::radians(rotate.y), glm::vec3(0, 1, 0)) * Rotate;
+			}
+			if (rotate.x != 0) {
+				Rotate = glm::rotate(glm::mat4(1.f), glm::radians(rotate.x), glm::vec3(1, 0, 0)) * Rotate;
+			}
+
+			ModelMatrix = Rotate * ModelMatrix;
+		}
+		else {
+			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;
+		}
+
+		Stream >> temp;
+	}
+
+	box->InverseMatrix = glm::inverse(ModelMatrix);
+
+	return box;
+}
