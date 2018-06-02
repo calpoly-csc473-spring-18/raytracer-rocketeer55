@@ -27,11 +27,11 @@ struct Scene {
 	void printSceneInfo();
 	void renderScene();
 	void printPixelColor(int x, int y);
-	Intersection* getFirstIntersection(Ray* ray);
-	bool isInShadow(Intersection* intersection, Light* light);
+	Intersection getFirstIntersection(Ray &ray);
+	bool isInShadow(Intersection &intersection, Light* light);
 
 private:
-	Intersection* getFirstIntersectionSDS(BVH_Node* node, Ray* ray);
+	Intersection getFirstIntersectionSDS(BVH_Node* node, Ray &ray);
 	void initSDS();
 };
 

@@ -36,7 +36,7 @@ void Triangle::print() {
 	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
 }
 
-float Triangle::getFirstCollision(Ray* ray) {
+float Triangle::getFirstCollision(Ray &ray) {
 	// NEED TO OPTIMIZE
 	
 	float t, gamma, beta, alpha, determinant_a = 0.f;
@@ -44,24 +44,24 @@ float Triangle::getFirstCollision(Ray* ray) {
 
 	// Compute T
 	m_a = glm::mat3(0.f);
-	m_a[0][0] = a.x - b.x;	m_a[0][1] = a.x - c.x;  m_a[0][2] = ray->d.x;
-	m_a[1][0] = a.y - b.y; 	m_a[1][1] = a.y - c.y;	m_a[1][2] = ray->d.y;
-	m_a[2][0] = a.z - b.z;	m_a[2][1] = a.z - c.z;	m_a[2][2] = ray->d.z;
+	m_a[0][0] = a.x - b.x;	m_a[0][1] = a.x - c.x;  m_a[0][2] = ray.d.x;
+	m_a[1][0] = a.y - b.y; 	m_a[1][1] = a.y - c.y;	m_a[1][2] = ray.d.y;
+	m_a[2][0] = a.z - b.z;	m_a[2][1] = a.z - c.z;	m_a[2][2] = ray.d.z;
 
 	m_gamma = glm::mat3(0.f);
-	m_gamma[0][0] = a.x - b.x;	m_gamma[0][1] = a.x - ray->origin.x;  m_gamma[0][2] = ray->d.x;
-	m_gamma[1][0] = a.y - b.y;	m_gamma[1][1] = a.y - ray->origin.y;  m_gamma[1][2] = ray->d.y;
-	m_gamma[2][0] = a.z - b.z;  m_gamma[2][1] = a.z - ray->origin.z;  m_gamma[2][2] = ray->d.z;
+	m_gamma[0][0] = a.x - b.x;	m_gamma[0][1] = a.x - ray.origin.x;  m_gamma[0][2] = ray.d.x;
+	m_gamma[1][0] = a.y - b.y;	m_gamma[1][1] = a.y - ray.origin.y;  m_gamma[1][2] = ray.d.y;
+	m_gamma[2][0] = a.z - b.z;  m_gamma[2][1] = a.z - ray.origin.z;  m_gamma[2][2] = ray.d.z;
 
 	m_beta = glm::mat3(0.f);
-	m_beta[0][0] = a.x - ray->origin.x;  m_beta[0][1] = a.x - c.x;  m_beta[0][2] = ray->d.x;
-	m_beta[1][0] = a.y - ray->origin.y;  m_beta[1][1] = a.y - c.y;  m_beta[1][2] = ray->d.y;
-	m_beta[2][0] = a.z - ray->origin.z;  m_beta[2][1] = a.z - c.z;  m_beta[2][2] = ray->d.z;
+	m_beta[0][0] = a.x - ray.origin.x;  m_beta[0][1] = a.x - c.x;  m_beta[0][2] = ray.d.x;
+	m_beta[1][0] = a.y - ray.origin.y;  m_beta[1][1] = a.y - c.y;  m_beta[1][2] = ray.d.y;
+	m_beta[2][0] = a.z - ray.origin.z;  m_beta[2][1] = a.z - c.z;  m_beta[2][2] = ray.d.z;
 
 	m_t = glm::mat3(0.f);
-	m_t[0][0] = a.x - b.x;  m_t[0][1] = a.x - c.x;  m_t[0][2] = a.x - ray->origin.x;
-	m_t[1][0] = a.y - b.y;  m_t[1][1] = a.y - c.y;  m_t[1][2] = a.y - ray->origin.y;
-	m_t[2][0] = a.z - b.z;  m_t[2][1] = a.z - c.z;  m_t[2][2] = a.z - ray->origin.z;
+	m_t[0][0] = a.x - b.x;  m_t[0][1] = a.x - c.x;  m_t[0][2] = a.x - ray.origin.x;
+	m_t[1][0] = a.y - b.y;  m_t[1][1] = a.y - c.y;  m_t[1][2] = a.y - ray.origin.y;
+	m_t[2][0] = a.z - b.z;  m_t[2][1] = a.z - c.z;  m_t[2][2] = a.z - ray.origin.z;
 
 
 	determinant_a = glm::determinant(m_a);

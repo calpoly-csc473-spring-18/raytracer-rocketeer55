@@ -36,8 +36,8 @@ void Plane::print() {
 	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
 }
 
-float Plane::getFirstCollision(Ray* ray) {
-	float t = (distance - glm::dot(ray->origin, normal)) / glm::dot(ray->d, normal);
+float Plane::getFirstCollision(Ray &ray) {
+	float t = (distance - glm::dot(ray.origin, normal)) / glm::dot(ray.d, normal);
 	if (t < 0) {
 		return -1;
 	}

@@ -9,12 +9,12 @@ using namespace Objects;
 
 struct Intersection {
 	glm::vec3 position, color;
-	Ray* ray;
+	Ray ray;
 	float t;
 	Object* object;
 
 	Intersection();
-	Intersection(Ray* ray, float t, Object* object);
+	Intersection(Ray &ray, float t, Object* object);
 
 	void print();
 	glm::vec3 getNormal();

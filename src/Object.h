@@ -25,7 +25,7 @@ namespace Objects {
 		
 		virtual std::string type() = 0;
 		virtual void print() = 0;
-		virtual float getFirstCollision(Ray* ray) = 0;
+		virtual float getFirstCollision(Ray &ray) = 0;
 		virtual glm::vec3 getNormal(glm::vec3 point) = 0;
 
 		virtual void calculateBoundingBox() = 0;

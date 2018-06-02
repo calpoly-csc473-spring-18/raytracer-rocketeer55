@@ -29,17 +29,17 @@ void Box::print() {
 	std::cout << "Not printint boxes -- ayyyyyyylmao" << std::endl;
 }
 
-float Box::getFirstCollision(Ray* ray) {
+float Box::getFirstCollision(Ray &ray) {
 	float t_xMin, t_xMax;
 	float t_yMin, t_yMax;
 	float t_zMin, t_zMax;
 
-	t_xMin = (min.x - ray->origin.x) / ray->d.x;
-	t_xMax = (max.x - ray->origin.x) / ray->d.x;
-	t_yMin = (min.y - ray->origin.y) / ray->d.y;
-	t_yMax = (max.y - ray->origin.y) / ray->d.y;
-	t_zMin = (min.z - ray->origin.z) / ray->d.z;
-	t_zMax = (max.z - ray->origin.z) / ray->d.z;
+	t_xMin = (min.x - ray.origin.x) / ray.d.x;
+	t_xMax = (max.x - ray.origin.x) / ray.d.x;
+	t_yMin = (min.y - ray.origin.y) / ray.d.y;
+	t_yMax = (max.y - ray.origin.y) / ray.d.y;
+	t_zMin = (min.z - ray.origin.z) / ray.d.z;
+	t_zMax = (max.z - ray.origin.z) / ray.d.z;
 
 	if (t_xMin > t_xMax) {
 		float temp = t_xMin;

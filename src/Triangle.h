@@ -13,7 +13,7 @@ namespace Objects {
 
 		std::string type();
 		void print();
-		float getFirstCollision(Ray *ray);
+		float getFirstCollision(Ray &ray);
 		glm::vec3 getNormal(glm::vec3 point);
 
 		void calculateBoundingBox();

@@ -36,12 +36,12 @@ void Sphere::print() {
 	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
 }
 
-float Sphere::getFirstCollision(Ray* ray) {
+float Sphere::getFirstCollision(Ray &ray) {
 	float a, b, c, discriminant, t;
 
-	a = glm::dot(ray->d, ray->d);
-	b = glm::dot(2.f * ray->d, ray->origin - center);
-	c = glm::dot(ray->origin - center, ray->origin - center) - (radius * radius);
+	a = glm::dot(ray.d, ray.d);
+	b = glm::dot(2.f * ray.d, ray.origin - center);
+	c = glm::dot(ray.origin - center, ray.origin - center) - (radius * radius);
 
 	discriminant = (b * b) - (4 * a * c);
 	if (discriminant == 0) {

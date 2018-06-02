@@ -8,12 +8,12 @@ Intersection::Intersection() {
 	object = NULL;
 }
 
-Intersection::Intersection(Ray* _ray, float _t, Object* _object) {
+Intersection::Intersection(Ray &_ray, float _t, Object* _object) {
 	ray = _ray;
 	t = _t;
 	object = _object;
 
-	position = ray->origin + t * ray->d;
+	position = ray.origin + t * ray.d;
 	color = glm::vec3(0.f);
 }
 

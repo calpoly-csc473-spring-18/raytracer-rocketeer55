@@ -15,7 +15,7 @@ struct BoundingBox {
 	void addBox(BoundingBox* other);
 	void rotate(glm::mat4 ModelMatrix);
 
-	bool intersects(Objects::Ray* ray);
+	bool intersects(Objects::Ray &ray);
 };
 
 #endif
