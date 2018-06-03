@@ -11,7 +11,7 @@ struct BVH_Node {
 	BVH_Node* right;
 
 	Object* object;
-	BoundingBox* box;
+	BoundingBox box;
 
 	BVH_Node();
 

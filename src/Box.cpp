@@ -101,10 +101,8 @@ glm::vec3 Box::getNormal(glm::vec3 point) {
 }
 
 void Box::calculateBoundingBox() {
-	BoundingBox* box = new BoundingBox(min);
-	box->addPoint(max);
+	boundingBox = BoundingBox(min);
+	boundingBox.addPoint(max);
 
-	box->rotate(ModelMatrix);
-
-	boundingBox = box;
+	boundingBox.rotate(ModelMatrix);
 }

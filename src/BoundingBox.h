@@ -12,7 +12,7 @@ struct BoundingBox {
 
 	void reset(glm::vec3 point);
 	void addPoint(glm::vec3 point);
-	void addBox(BoundingBox* other);
+	void addBox(BoundingBox &other);
 	void rotate(glm::mat4 ModelMatrix);
 
 	bool intersects(Objects::Ray &ray);

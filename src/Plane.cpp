@@ -50,5 +50,5 @@ glm::vec3 Plane::getNormal(glm::vec3 point) {
 
 void Plane::calculateBoundingBox() {
 	// Planes are unbounded
-	boundingBox = NULL;
+	boundingBox = BoundingBox();
 }

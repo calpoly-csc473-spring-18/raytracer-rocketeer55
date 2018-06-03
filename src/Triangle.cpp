@@ -103,11 +103,9 @@ glm::vec3 Triangle::getNormal(glm::vec3 point) {
 }
 
 void Triangle::calculateBoundingBox() {
-	BoundingBox* box = new BoundingBox(a);
-	box->addPoint(b);
-	box->addPoint(c);
+	boundingBox = BoundingBox(a);
+	boundingBox.addPoint(b);
+	boundingBox.addPoint(c);
 
-	box->rotate(ModelMatrix);
-
-	boundingBox = box;
+	boundingBox.rotate(ModelMatrix);
 }

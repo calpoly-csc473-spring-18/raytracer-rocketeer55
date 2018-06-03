@@ -26,9 +26,9 @@ void BoundingBox::addPoint(glm::vec3 point) {
 	max.z = std::max(max.z, point.z);
 }
 
-void BoundingBox::addBox(BoundingBox* other) {
-	addPoint(other->min);
-	addPoint(other->max);
+void BoundingBox::addBox(BoundingBox &other) {
+	addPoint(other.min);
+	addPoint(other.max);
 }
 
 void BoundingBox::rotate(glm::mat4 ModelMatrix) {

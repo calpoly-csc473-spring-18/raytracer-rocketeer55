@@ -19,7 +19,7 @@ namespace Objects {
 		glm::mat4 ModelMatrix;
 		glm::mat4 InverseMatrix;
 
-		BoundingBox* boundingBox;
+		BoundingBox boundingBox;
 
 		virtual ~Object() {};
 		

@@ -193,7 +193,7 @@ Intersection Scene::getFirstIntersection(Ray &ray) {
 Intersection Scene::getFirstIntersectionSDS(BVH_Node* node, Ray &ray) {
 	Intersection intersection;
 
-	if (!node->box->intersects(ray)) {
+	if (!node->box.intersects(ray)) {
 		// Ray doesn't intersect this bounding box
 		return intersection;
 	}

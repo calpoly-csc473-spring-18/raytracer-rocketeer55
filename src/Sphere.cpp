@@ -74,10 +74,8 @@ glm::vec3 Sphere::getNormal(glm::vec3 point) {
 }
 
 void Sphere::calculateBoundingBox() {
-	BoundingBox* box = new BoundingBox(center - glm::vec3(radius));
-	box->addPoint(center + glm::vec3(radius));
+	boundingBox = BoundingBox(center - glm::vec3(radius));
+	boundingBox.addPoint(center + glm::vec3(radius));
 
-	box->rotate(ModelMatrix);
-
-	boundingBox = box;
+	boundingBox.rotate(ModelMatrix);
 }
