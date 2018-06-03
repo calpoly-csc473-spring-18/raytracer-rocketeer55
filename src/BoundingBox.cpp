@@ -1,4 +1,5 @@
 #include "BoundingBox.h"
+#include <vector>
 #include <algorithm>
 
 using namespace Objects;
@@ -43,8 +44,8 @@ void BoundingBox::rotate(glm::mat4 ModelMatrix) {
 	corners.push_back(glm::vec3(max.x, max.y, min.z));
 	corners.push_back(glm::vec3(max.x, max.y, max.z));
 
-	reset(corners[0]);
-	for (unsigned int i = 0; i < corners.size(); i++) {
+	reset(glm::vec3(ModelMatrix * glm::vec4(corners[0], 1)));
+	for (unsigned int i = 1; i < corners.size(); i++) {
 		addPoint(glm::vec3(ModelMatrix * glm::vec4(corners[i], 1)));
 	}
 }
