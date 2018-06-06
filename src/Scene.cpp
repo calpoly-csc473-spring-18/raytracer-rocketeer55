@@ -5,9 +5,12 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <atomic>
+#include <thread>
 
 Scene::Scene() {
 	width = height = 0;
+	thread = 1;
 	s = 1;
 	ss = fresnel = beers = sds = false;
 }
@@ -91,6 +94,75 @@ void Scene::renderScene() {
 
 	image->writeToFile(Globals::outfilename);
 	delete(image);
+}
+
+void Scene::renderSceneThreaded(const int numThreads) {
+	Image* image = new Image(width, height);
+	glm::vec3 color;
+
+	if (sds) {
+		initSDS();
+	}
+
+	int const pixelCount = width * height;
+
+	std::atomic<int> doneCount;
+	std::atomic<int> currentPixel;
+
+	doneCount = 0;
+	currentPixel = 0;
+
+	auto RenderKernel = [&](int const threadIndex) {
+		while(true) {
+			int pixel = currentPixel ++;
+
+			if (pixel >= pixelCount) {
+				break;
+			}
+
+			int const x = pixel / height;
+			int const y = pixel % height;
+
+			glm::vec3 color;
+			for (int q = 0; q < s; q++) {
+				for (int r = 0; r < s; r++) {
+					color += Shader::getColor((Scene*)this, x, y, q, r, s);
+				}
+			}
+
+			color /= powf(s, 2);
+
+			color.r = std::min(std::max(color.r, 0.f), 1.0f);
+			color.g = std::min(std::max(color.g, 0.f), 1.0f);
+			color.b = std::min(std::max(color.b, 0.f), 1.0f);
+
+			unsigned int red = (unsigned int)std::round(color.r * 255.f);
+			unsigned int green = (unsigned int)std::round(color.g * 255.f);
+			unsigned int blue = (unsigned int)std::round(color.b * 255.f);
+
+			image->setPixel(x, y, red, green, blue);
+		}
+
+		doneCount++;
+
+		if (threadIndex == 0) {
+			while (doneCount < numThreads) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			}
+		}
+	};
+
+	std::vector<std::thread> threads;
+	for (int i = 0; i < numThreads; ++i) {
+		threads.push_back(std::thread(RenderKernel, i));
+	}
+	for (int i = 0; i < numThreads; ++i) {
+		threads[i].join();
+	}
+
+	image->writeToFile(Globals::outfilename);
+	delete(image);
+
 }
 
 void Scene::printPixelColor(int x, int y) {

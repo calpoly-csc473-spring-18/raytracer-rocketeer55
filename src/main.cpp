@@ -61,6 +61,9 @@ int parseArgs(int &argc, char *argv[]) {
 				else if (std::string(argv[i]).compare("-sds") == 0) {
 					scene->sds = true;
 				}
+				else if (argv[i][1] == 't' && argv[i][2] == '=') {
+					scene->thread = argv[i][3] - '0';
+				}
 			}
 		}
 	}
@@ -167,7 +170,12 @@ int main(int argc, char * argv[]) {
 	parseFile();
 
 	if (mode == RENDER) {
-		scene->renderScene();
+		if (scene->thread > 1) {
+			scene->renderSceneThreaded(scene->thread);
+		}
+		else {
+			scene->renderScene();
+		}
 	}
 	else if (mode == PIXEL_COLOR || mode == PRINT_RAYS) {
 		scene->printPixelColor(x, y);

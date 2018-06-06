@@ -18,7 +18,7 @@ struct Scene {
 	std::vector<Object*> planes;
 	std::vector<Object*> objects_without_planes;
 
-	int width, height, s;
+	int width, height, s, thread;
 	bool ss, fresnel, beers, sds;
 
 	Scene();
@@ -26,6 +26,7 @@ struct Scene {
 
 	void printSceneInfo();
 	void renderScene();
+	void renderSceneThreaded(const int numThreads);
 	void printPixelColor(int x, int y);
 	Intersection getFirstIntersection(Ray &ray);
 	bool isInShadow(Intersection &intersection, Light* light);
