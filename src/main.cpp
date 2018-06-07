@@ -61,8 +61,8 @@ int parseArgs(int &argc, char *argv[]) {
 				else if (std::string(argv[i]).compare("-sds") == 0) {
 					scene->sds = true;
 				}
-				else if (argv[i][1] == 't' && argv[i][2] == '=') {
-					scene->thread = argv[i][3] - '0';
+				else if (std::string(argv[i]).compare("-threads") == 0) {
+					scene->thread = atoi(argv[i+1]);
 				}
 			}
 		}
