@@ -19,7 +19,7 @@ struct Scene {
 	std::vector<Object*> objects_without_planes;
 
 	int width, height, s, thread;
-	bool ss, fresnel, beers, sds;
+	bool ss, fresnel, beers, sds, gi;
 
 	Scene();
 	~Scene();

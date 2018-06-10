@@ -12,7 +12,7 @@ Scene::Scene() {
 	width = height = 0;
 	thread = 1;
 	s = 1;
-	ss = fresnel = beers = sds = false;
+	ss = fresnel = beers = sds = gi = false;
 }
 
 Scene::~Scene() {

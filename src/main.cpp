@@ -64,6 +64,9 @@ int parseArgs(int &argc, char *argv[]) {
 				else if (std::string(argv[i]).compare("-threads") == 0) {
 					scene->thread = atoi(argv[i+1]);
 				}
+				else if (std::string(argv[i]).compare("-gi") == 0) {
+					scene->gi = true;
+				}
 			}
 		}
 	}

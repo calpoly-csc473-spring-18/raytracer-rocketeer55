@@ -39,8 +39,6 @@ Ray::Ray(int _x, int _y, int _width, int _height, int q, int r, int s, Camera* c
 }
 
 Ray::Ray(glm::vec3 _origin, glm::vec3 _destination) {
-	glm::vec3 orig, dest, D;
-
 	origin = _origin;
 
 	d = normalize(_destination - _origin);

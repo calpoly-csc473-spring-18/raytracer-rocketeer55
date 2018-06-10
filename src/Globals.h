@@ -14,9 +14,14 @@ namespace Globals
 
 	static const int MAX_BOUNCE = 6;
 
+	static const int FIRST_BOUNCE_GI = 64;
+	static const int SECOND_BOUNCE_GI = 16;
+
 	static const float EPSILON = 0.001f;
 
 	static const float BEERS_ALPHA = 0.15;
+
+	static const float PI = 3.14159265359f;
 
 	static std::string filename;
 	static const std::string outfilename = "output.png";
