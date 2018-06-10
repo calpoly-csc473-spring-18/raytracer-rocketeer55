@@ -10,11 +10,11 @@ namespace Shader {
 	glm::vec3 getColor(Scene* scene, Ray &ray, int currBounce, int maxBounce);
 	glm::vec3 getColor(Scene* scene, Ray &ray, int currBounce, int maxBounce, int GIBounce);
 
-	glm::vec3 getAmbient(Scene* scene, Intersection &intersection, int GIBounce);
+	glm::vec3 getAmbient(Scene* scene, Intersection &intersection, int currBounce, int maxBounce, int GIBounce);
 	glm::vec3 getDiffuse(Intersection &intersection, Light* light);
 	glm::vec3 getSpecular(Intersection &intersection, Light* light);
 
-	glm::vec3 getLocal(Intersection &intersection, Scene* scene, int GIBounce);
+	glm::vec3 getLocal(Intersection &intersection, Scene* scene, int currBounce, int maxBounce, int GIBounce);
 	glm::vec3 getReflection(Intersection &intersection, Scene* scene, int currBounce, int maxBounce);
 	glm::vec3 getRefraction(Intersection &intersection, Scene* scene, int currBounce, int maxBounce);
 

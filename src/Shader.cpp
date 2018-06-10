@@ -34,7 +34,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray &ray, int currBounce, int maxBounce
 		return final_color;
 	}
 
-	local_color = getLocal(intersection, scene, GIBounce);
+	local_color = getLocal(intersection, scene, currBounce, maxBounce, GIBounce);
 
 	float reflection = intersection.object->finish.reflection;
 	float filter = intersection.object->pigment.f;
@@ -64,7 +64,7 @@ glm::vec3 Shader::getColor(Scene* scene, Ray &ray, int currBounce, int maxBounce
 	return final_color;
 }
 
-glm::vec3 Shader::getAmbient(Scene* scene, Intersection &intersection, int GIBounce) {
+glm::vec3 Shader::getAmbient(Scene* scene, Intersection &intersection, int currBounce, int maxBounce, int GIBounce) {
 	glm::vec3 color = glm::vec3(0.f);
 
 	if (!scene->gi) {
@@ -84,10 +84,6 @@ glm::vec3 Shader::getAmbient(Scene* scene, Intersection &intersection, int GIBou
 		bounces = Globals::SECOND_BOUNCE_GI;
 	}
 	else {
-		color.r = intersection.object->finish.ambient * intersection.object->pigment.r;
-		color.g = intersection.object->finish.ambient * intersection.object->pigment.g;
-		color.b = intersection.object->finish.ambient * intersection.object->pigment.b;
-
 		return color;
 	}
 
@@ -102,7 +98,7 @@ glm::vec3 Shader::getAmbient(Scene* scene, Intersection &intersection, int GIBou
 			v = ((rand() / ((float)RAND_MAX)) / (float)stratified) + ((float)y / (float)stratified);
 
 			GI_ray = Shader::generateHemisphereSampleRay(intersection, u, v);
-			color += Shader::getColor(scene, GI_ray, 0, Globals::MAX_BOUNCE, GIBounce + 1);
+			color += Shader::getColor(scene, GI_ray, currBounce, Globals::MAX_BOUNCE, GIBounce + 1);
 		}
 	}
 
@@ -156,10 +152,10 @@ glm::vec3 Shader::getSpecular(Intersection &intersection, Light* light) {
 	return color;
 }
 
-glm::vec3 Shader::getLocal(Intersection &intersection, Scene* scene, int GIBounce) {
+glm::vec3 Shader::getLocal(Intersection &intersection, Scene* scene, int currBounce, int maxBounce, int GIBounce) {
 	glm::vec3 local_color = glm::vec3(0.f);
 
-	local_color += Shader::getAmbient(scene, intersection, GIBounce);
+	local_color += Shader::getAmbient(scene, intersection, currBounce, maxBounce, GIBounce);
 
 	for (unsigned int i = 0; i < scene->lights.size(); i++) {
 		if (!scene->isInShadow(intersection, scene->lights[i])) {
