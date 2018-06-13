@@ -67,6 +67,9 @@ int parseArgs(int &argc, char *argv[]) {
 				else if (std::string(argv[i]).compare("-gi") == 0) {
 					scene->gi = true;
 				}
+				else if (std::string(argv[i]).compare("-p") == 0) {
+					scene->progress = true;
+				}
 			}
 		}
 	}

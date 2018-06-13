@@ -21,5 +21,8 @@ glm::vec3 Intersection::getNormal() {
 	glm::vec3 new_point = object->InverseMatrix * glm::vec4(position, 1.0f);
 	glm::vec3 normal = glm::transpose(object->InverseMatrix) * glm::vec4(object->getNormal(new_point), 0.f);
 
+	if (glm::dot(normal, ray.d) > 0.f) {
+		normal = -normal;
+	}
 	return glm::normalize(normal);
 }

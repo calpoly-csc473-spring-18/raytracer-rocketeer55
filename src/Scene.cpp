@@ -12,7 +12,7 @@ Scene::Scene() {
 	width = height = 0;
 	thread = 1;
 	s = 1;
-	ss = fresnel = beers = sds = gi = false;
+	ss = fresnel = beers = sds = gi = progress = false;
 }
 
 Scene::~Scene() {
@@ -70,6 +70,7 @@ void Scene::renderScene() {
 	}
 
 	for (int i = 0; i < width; i++) {
+		if (progress) {std::cout << "x: " << i << std::endl;}
 		for (int j = 0; j < height; j++) {
 			color = glm::vec3(0.f);
 			for (int q = 0; q < s; q++) {
@@ -122,6 +123,10 @@ void Scene::renderSceneThreaded(const int numThreads) {
 
 			int const x = pixel / height;
 			int const y = pixel % height;
+
+			if (progress && y == 0) {
+				std::cout << "x: " << x << std::endl;
+			}
 
 			glm::vec3 color;
 			for (int q = 0; q < s; q++) {

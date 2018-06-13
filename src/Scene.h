@@ -20,6 +20,7 @@ struct Scene {
 
 	int width, height, s, thread;
 	bool ss, fresnel, beers, sds, gi;
+	bool progress;
 
 	Scene();
 	~Scene();
