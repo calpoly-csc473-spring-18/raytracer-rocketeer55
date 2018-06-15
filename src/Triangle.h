@@ -10,11 +10,15 @@ namespace Objects {
 
 		Triangle();
 		Triangle(glm::vec3 _a, glm::vec3 _b, glm::vec3 _c);
+		Triangle(const Triangle &other);
 
 		std::string type();
 		void print();
 		float getFirstCollision(Ray &ray);
 		glm::vec3 getNormal(glm::vec3 point);
+
+		void setPosition(glm::vec3 position);
+		glm::vec3 getPosition();
 
 		void calculateBoundingBox();
 	};

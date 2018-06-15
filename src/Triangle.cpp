@@ -8,7 +8,10 @@ Triangle::Triangle() {
 	b = glm::vec3();
 	c = glm::vec3();
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
 }
 
 Triangle::Triangle(glm::vec3 _a, glm::vec3 _b, glm::vec3 _c) {
@@ -16,7 +19,26 @@ Triangle::Triangle(glm::vec3 _a, glm::vec3 _b, glm::vec3 _c) {
 	b = _b;
 	c = _c;
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
+}
+
+Triangle::Triangle(const Triangle &other) {
+	a = other.a;
+	b = other.b;
+	c = other.c;
+
+	pigment = other.pigment;
+	finish = other.finish;
+
+	ModelMatrix = other.ModelMatrix;
+	InverseMatrix = other.InverseMatrix;
+
+	boundingBox = other.boundingBox;
+
+	isLight = other.isLight;
 }
 
 std::string Triangle::type() {
@@ -109,3 +131,6 @@ void Triangle::calculateBoundingBox() {
 
 	boundingBox.rotate(ModelMatrix);
 }
+
+void Triangle::setPosition(glm::vec3 position) {}
+glm::vec3 Triangle::getPosition() {return glm::vec3();}

@@ -9,7 +9,10 @@ namespace Objects {
 
 		Camera();
 		Camera(glm::vec3 _location, glm::vec3 _up, glm::vec3 _right, glm::vec3 _look_at);
+		Camera(const Camera &other);
 
+		void setPosition(glm::vec3 position);
+		
 		void print();
 	};
 }

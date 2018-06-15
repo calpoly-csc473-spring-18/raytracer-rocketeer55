@@ -30,13 +30,22 @@ int parseArgs(int &argc, char *argv[]) {
 	else if (input.compare("printrays") == 0) {
 		mode = PRINT_RAYS;
 	}
+	else if (input.compare("scene_1") == 0) {
+		mode = SCENE_1;
+	}
+	else if (input.compare("scene_2") == 0) {
+		mode = SCENE_2;
+	}
+	else if (input.compare("scene_3") == 0) {
+		mode = SCENE_3;
+	}
 	else {
 		return 1;
 	}
 
 	filename = argv[2];
 
-	if (mode == RENDER) {
+	if (mode == RENDER || mode == SCENE_1 || mode == SCENE_2 || mode == SCENE_3) {
 		if (argc < 5) {
 			return 1;
 		}
@@ -188,6 +197,15 @@ int main(int argc, char * argv[]) {
 	}
 	else if (mode == SCENE_INFO) {
 		scene->printSceneInfo();
+	}
+	else if (mode == SCENE_1) {
+		scene->renderScene1(scene->thread);
+	}
+	else if (mode == SCENE_2) {
+		scene->renderScene2(scene->thread);
+	}
+	else if (mode == SCENE_3) {
+		scene->renderScene3(scene->thread);
 	}
 
 	delete(scene);

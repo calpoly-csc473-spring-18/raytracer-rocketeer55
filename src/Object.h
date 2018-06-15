@@ -11,8 +11,6 @@
 
 namespace Objects {
 	struct Object {
-		static int objectCount;
-
 		Pigment pigment;
 		Finish finish;
 
@@ -21,12 +19,17 @@ namespace Objects {
 
 		BoundingBox boundingBox;
 
+		bool isLight;
+
 		virtual ~Object() {};
 		
 		virtual std::string type() = 0;
 		virtual void print() = 0;
 		virtual float getFirstCollision(Ray &ray) = 0;
 		virtual glm::vec3 getNormal(glm::vec3 point) = 0;
+
+		virtual void setPosition(glm::vec3 position) = 0;
+		virtual glm::vec3 getPosition() = 0;
 
 		virtual void calculateBoundingBox() = 0;
 	};

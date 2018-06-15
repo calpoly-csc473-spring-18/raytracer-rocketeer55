@@ -10,6 +10,8 @@ Plane::Plane() {
 
 	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
 }
 
 Plane::Plane(glm::vec3 _normal, float _distance) {
@@ -18,6 +20,23 @@ Plane::Plane(glm::vec3 _normal, float _distance) {
 
 	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
+}
+
+Plane::Plane(const Plane &other) {
+	normal = other.normal;
+	distance = other.distance;
+
+	pigment = other.pigment;
+	finish = other.finish;
+
+	ModelMatrix = other.ModelMatrix;
+	InverseMatrix = other.InverseMatrix;
+
+	boundingBox = other.boundingBox;
+
+	isLight = other.isLight;
 }
 
 std::string Plane::type() {
@@ -52,3 +71,7 @@ void Plane::calculateBoundingBox() {
 	// Planes are unbounded
 	boundingBox = BoundingBox();
 }
+
+
+void Plane::setPosition(glm::vec3 position) {}
+glm::vec3 Plane::getPosition() {return glm::vec3();}

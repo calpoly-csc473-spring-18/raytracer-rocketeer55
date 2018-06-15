@@ -7,42 +7,49 @@ camera {
   look_at   <0, 0, 0>
 }
 
-light_source {<4, 0, 0> color rgb <1.0, 0.94510, 0.87843>}
+light_source {<0, 0, 0> color rgb <1.0, 0.94510, 0.87843>}
 
 // Floor (y = -8)
 plane {<0, 1, 0>, -5
 	pigment {color rgb <0.93333, 0.91375, 0.91375>}
-    finish {ambient 0.2 diffuse 0.4}
+    finish {ambient 0.2 diffuse 0.3}
 }
 
 // Left wall (x = -8)
 plane {<-1, 0, 0>, -8
 	pigment {color rgb <0.93333, 0.91375, 0.91375>}
-    finish {ambient 0.2 diffuse 0.4}
+    finish {ambient 0.2 diffuse 0.3}
 }
 
 // Right wall (x = 8)
 plane {<-1, 0, 0>, 8
 	pigment {color rgb <0.93333, 0.91375, 0.91375>}
-    finish {ambient 0.2 diffuse 0.4}
+    finish {ambient 0.2 diffuse 0.3}
 }
 
 // Top wall (y = 8)
 plane {<0, 1, 0>, 9
 	pigment {color rgb <0.93333, 0.91375, 0.91375>}
-    finish {ambient 0.2 diffuse 0.4}
+    finish {ambient 0.2 diffuse 0.3}
 }
 
 // Back wall (z = 8)
 plane {<0, 0, 1>, -8}
 	pigment {color rgb <0.93333, 0.91375, 0.91375>}
-    finish {ambient 0.2 diffuse 0.4}
+    finish {ambient 0.2 diffuse 0.3}
 }
 
 // SPHERE
 sphere {<0, 0, 0>, 1
 	pigment {color rgb <0.93333, 0.91375, 0.91375>}
-    finish {ambient 0.2 diffuse 0.4}
+    finish {ambient 0.1 diffuse 0.6 specular 0.1}
+}
+
+// LIGHT SPHERE
+sphere {<0, 0, 0>, 0.25
+    pigment {color rgb <1, 1, 1>}
+    finish {ambient 1}
+    is_light =0
 }
 
 // CUBE FRAME

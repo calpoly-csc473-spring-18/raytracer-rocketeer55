@@ -17,6 +17,17 @@ Camera::Camera(glm::vec3 _location, glm::vec3 _up, glm::vec3 _right, glm::vec3 _
 	look_at = _look_at;
 }
 
+Camera::Camera(const Camera &other) {
+	location = other.location;
+	up = other.up;
+	right = other.right;
+	look_at = other.look_at;
+}
+
+void Camera::setPosition(glm::vec3 position) {
+	location = position;
+}
+
 void Camera::print() {
 	std::cout << "Camera:" << std::endl;
 	std::cout << "- Location: {" << location.x << " " << location.y << " " << location.z << "}" << std::endl;

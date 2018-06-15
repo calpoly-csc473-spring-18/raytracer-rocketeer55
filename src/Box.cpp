@@ -11,6 +11,8 @@ Box::Box() {
 
 	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
 }
 
 Box::Box(glm::vec3 _min, glm::vec3 _max) {
@@ -19,6 +21,23 @@ Box::Box(glm::vec3 _min, glm::vec3 _max) {
 
 	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
+}
+
+Box::Box(const Box &other) {
+	min = other.min;
+	max = other.max;
+
+	pigment = other.pigment;
+	finish = other.finish;
+
+	ModelMatrix = other.ModelMatrix;
+	InverseMatrix = other.InverseMatrix;
+
+	boundingBox = other.boundingBox;
+
+	isLight = other.isLight;
 }
 
 std::string Box::type() {
@@ -106,3 +125,7 @@ void Box::calculateBoundingBox() {
 
 	boundingBox.rotate(ModelMatrix);
 }
+
+
+void Box::setPosition(glm::vec3 position) {}
+glm::vec3 Box::getPosition() {return glm::vec3();}

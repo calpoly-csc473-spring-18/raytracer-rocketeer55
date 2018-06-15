@@ -10,11 +10,15 @@ namespace Objects {
 
 		Sphere();
 		Sphere(glm::vec3 _center, float _radius);
+		Sphere(const Sphere &other);
 
 		std::string type();
 		void print();
 		float getFirstCollision(Ray &ray);
 		glm::vec3 getNormal(glm::vec3 point);
+
+		void setPosition(glm::vec3 position);
+		glm::vec3 getPosition();
 
 		void calculateBoundingBox();
 	};

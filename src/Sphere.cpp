@@ -10,14 +10,35 @@ Sphere::Sphere() {
 	center = glm::vec3();
 	radius = 0.f;
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
 }
 
 Sphere::Sphere(glm::vec3 _center, float _radius) {
 	center = _center;
 	radius = _radius;
 
+	ModelMatrix = glm::mat4(1.f);
 	InverseMatrix = glm::mat4(1.f);
+
+	isLight = false;
+}
+
+Sphere::Sphere(const Sphere &other) {
+	center = other.center;
+	radius = other.radius;
+
+	pigment = other.pigment;
+	finish = other.finish;
+
+	ModelMatrix = other.ModelMatrix;
+	InverseMatrix = other.InverseMatrix;
+
+	boundingBox = other.boundingBox;
+
+	isLight = other.isLight;
 }
 
 std::string Sphere::type() {
@@ -78,4 +99,12 @@ void Sphere::calculateBoundingBox() {
 	boundingBox.addPoint(center + glm::vec3(radius));
 
 	boundingBox.rotate(ModelMatrix);
+}
+
+void Sphere::setPosition(glm::vec3 position) {
+	center = position;
+}
+
+glm::vec3 Sphere::getPosition() {
+	return center;
 }

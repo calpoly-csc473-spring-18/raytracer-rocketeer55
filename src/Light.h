@@ -11,6 +11,9 @@ namespace Objects {
 
 		Light();
 		Light(glm::vec3 _location, Pigment _pigment);
+		Light(const Light &other);
+
+		void setPosition(glm::vec3 position);
 
 		void print();
 	};

@@ -23,11 +23,23 @@ struct Scene {
 	bool progress;
 
 	Scene();
+	Scene(const Scene &other);
 	~Scene();
 
 	void printSceneInfo();
 	void renderScene();
+	void renderScene(std::string filename);
 	void renderSceneThreaded(const int numThreads);
+
+	void renderScene1(const int numThreads);
+	void renderScene1Frame(Scene* copy, const int frame);
+
+	void renderScene2(const int numThreads);
+	void renderScene2Frame(Scene* copy, const int frame);
+
+	void renderScene3(const int numThreads);
+	void renderScene3Frame(Scene* copy, const int frame);
+
 	void printPixelColor(int x, int y);
 	Intersection getFirstIntersection(Ray &ray);
 	bool isInShadow(Intersection &intersection, Light* light);

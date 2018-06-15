@@ -335,6 +335,11 @@ Sphere* Parse::load_sphere(std::stringstream & Stream)
 
 			ModelMatrix = Rotate * ModelMatrix;
 		}
+		else if (temp.compare("is_light") == 0) {
+			// IS A LIGHT!
+			
+			sphere->isLight = true;
+		}
 		else {
 			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;
 		}
@@ -431,6 +436,11 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 
 			ModelMatrix = Rotate * ModelMatrix;
 		}
+		else if (temp.compare("is_light") == 0) {
+			// IS A LIGHT!
+			
+			plane->isLight = true;
+		}
 		else {
 			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;
 		}
@@ -447,6 +457,7 @@ Plane* Parse::load_plane(std::stringstream &Stream)
 Triangle* Parse::load_triangle(std::stringstream &Stream) {
 	Triangle* triangle = new Triangle();
 	std::string temp;
+	std::stringbuf buf;
 
 	glm::mat4 ModelMatrix = glm::mat4(1.f);
 
@@ -527,6 +538,11 @@ Triangle* Parse::load_triangle(std::stringstream &Stream) {
 
 			ModelMatrix = Rotate * ModelMatrix;
 		}
+		else if (temp.compare("is_light") == 0) {
+			// IS A LIGHT!
+			
+			triangle->isLight = true;
+		}
 		else {
 			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;
 		}
@@ -543,6 +559,7 @@ Triangle* Parse::load_triangle(std::stringstream &Stream) {
 Box* Parse::load_box(std::stringstream &Stream) {
 	Box* box = new Box();
 	std::string temp;
+	std::stringbuf buf;
 
 	glm::mat4 ModelMatrix = glm::mat4(1.f);
 
@@ -615,6 +632,11 @@ Box* Parse::load_box(std::stringstream &Stream) {
 			}
 
 			ModelMatrix = Rotate * ModelMatrix;
+		}
+		else if (temp.compare("is_light") == 0) {
+			// IS A LIGHT!
+			
+			box->isLight = true;
 		}
 		else {
 			std::cerr << "Expected either 'pigment', 'finish', 'scale', 'rotate', or 'translate' but found '" << temp << "'" << std::endl;

@@ -9,11 +9,15 @@ namespace Objects {
 
 		Box();
 		Box(glm::vec3 _min, glm::vec3 _max);
+		Box(const Box &other);
 
 		std::string type();
 		void print();
 		float getFirstCollision(Ray &ray);
 		glm::vec3 getNormal(glm::vec3 point);
+
+		void setPosition(glm::vec3 position);
+		glm::vec3 getPosition();
 
 		void calculateBoundingBox();
 	};
