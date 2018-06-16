@@ -21,10 +21,3 @@ Light::Light(const Light &other) {
 void Light::setPosition(glm::vec3 position) {
 	location = position;
 }
-
-void Light::print() {
-	std::cout << "- Location: {" << location.x << " " << location.y << " " << location.z << "}" << std::endl;
-	std::cout << "- Color: {";
-	pigment.print();
-	std::cout << "}" << std::endl;
-}

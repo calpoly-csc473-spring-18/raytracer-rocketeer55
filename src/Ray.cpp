@@ -43,11 +43,3 @@ Ray::Ray(glm::vec3 _origin, glm::vec3 _destination) {
 
 	d = normalize(_destination - _origin);
 }
-
-void Ray::print() {
-	std::cout << "Ray: {";
-	std::cout << std::setiosflags(std::ios::fixed);
-	std::cout << std::setprecision(4);
-	std::cout << origin.x << " " << origin.y << " " << origin.z << "} -> {";
-	std::cout << d.x << " " << d.y << " " << d.z << "}" << std::endl;
-}

@@ -18,18 +18,6 @@ int parseArgs(int &argc, char *argv[]) {
 	if (input.compare("render") == 0) {
 		mode = RENDER;
 	}
-	else if (input.compare("pixelcolor") == 0) {
-		mode = PIXEL_COLOR;
-	}
-	else if (input.compare("pixelray") == 0) {
-		mode = PIXEL_RAY;
-	}
-	else if (input.compare("sceneinfo") == 0) {
-		mode = SCENE_INFO;
-	}
-	else if (input.compare("printrays") == 0) {
-		mode = PRINT_RAYS;
-	}
 	else if (input.compare("scene_1") == 0) {
 		mode = SCENE_1;
 	}
@@ -80,20 +68,6 @@ int parseArgs(int &argc, char *argv[]) {
 					scene->progress = true;
 				}
 			}
-		}
-	}
-	else if (mode == PIXEL_RAY || mode == PRINT_RAYS) {
-		if (argc < 7) {
-			return 1;
-		}
-		scene->width = atoi(argv[3]);
-		scene->height = atoi(argv[4]);
-		x = atoi(argv[5]);
-		y = atoi(argv[6]);
-	}
-	else if (mode == SCENE_INFO) {
-		if (argc < 3) {
-			return 1;
 		}
 	}
 	else {
@@ -191,12 +165,6 @@ int main(int argc, char * argv[]) {
 		else {
 			scene->renderScene();
 		}
-	}
-	else if (mode == PIXEL_COLOR || mode == PRINT_RAYS) {
-		scene->printPixelColor(x, y);
-	}
-	else if (mode == SCENE_INFO) {
-		scene->printSceneInfo();
 	}
 	else if (mode == SCENE_1) {
 		scene->renderScene1(scene->thread);

@@ -45,18 +45,6 @@ std::string Sphere::type() {
 	return "Sphere";
 }
 
-void Sphere::print() {
-	std::cout << "- Type: Sphere" << std::endl;
-	std::cout << "- Center: {" << center.x << " " << center.y << " " << center.z << "}" << std::endl;
-	std::cout << "- Radius: " << radius << std::endl;
-	std::cout << "- Color: {";
-	pigment.print();
-	std::cout << "}" << std::endl;
-	std::cout << "- Material: " << std::endl;
-	std::cout << "  - Ambient: " << finish.ambient << std::endl;
-	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
-}
-
 float Sphere::getFirstCollision(Ray &ray) {
 	float a, b, c, discriminant, t;
 

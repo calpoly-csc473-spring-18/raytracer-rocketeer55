@@ -49,7 +49,7 @@ sphere {<0, 0, 0>, 1
 sphere {<0, 0, 0>, 0.25
     pigment {color rgb <1, 1, 1>}
     finish {ambient 1}
-    is_light =0
+    is_light
 }
 
 // CUBE FRAME

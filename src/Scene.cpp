@@ -67,40 +67,6 @@ Scene::~Scene() {
 	}
 }
 
-void Scene::printSceneInfo() {
-	// Setup cout
-
-	std::cout << std::setiosflags(std::ios::fixed);
-	std::cout << std::setprecision(4);
-
-	// Print Camera
-
-	camera->print();
-
-	// Print Light Sources
-
-	std::cout << "\n---\n\n" << lights.size() << " light(s)" << std::endl;
-
-	for (unsigned int i = 0; i < lights.size(); i++) {
-		Light* l = lights[i];
-		std::cout << "\nLight[" << i << "]:" << std::endl;
-
-		l->print();
-	}
-
-	// Print Objects
-
-	std::cout << "\n---\n\n" << objects.size() << " object(s)" << std::endl;
-
-	for (unsigned int i = 0; i < objects.size(); i++) {
-		Object* o = objects[i];
-
-		std::cout << "\nObject[" << i << "]:" << std::endl;
-
-		o->print();
-	}
-}
-
 void Scene::renderScene() {
 	renderScene(Globals::outfilename);
 }
@@ -421,25 +387,6 @@ void Scene::renderScene3Frame(Scene* copy, const int frame) {
 	std::string filename = "scene_3_frame_" + std::to_string(frame) + ".png";
 
 	copy->renderScene(filename);
-}
-
-void Scene::printPixelColor(int x, int y) {
-	glm::vec3 color = glm::vec3(0.f);
-	for (int q = 0; q < s; q++) {
-		for (int r = 0; r < s; r++) {
-			color += Shader::getColor((Scene*)this, x, y, q, r, s);
-		}
-	}
-	color /= powf(s, 2);
-
-	unsigned int red = (unsigned int)std::round(color.r * 255.f);
-	unsigned int green = (unsigned int)std::round(color.g * 255.f);
-	unsigned int blue = (unsigned int)std::round(color.b * 255.f);
-
-	std::cout << "Pixel: [" << x << ", " << y << "] ";
-	std::cout << "Color: (" << red << ", " << green << ", " << blue << ")" << std::endl;
-
-	color = Shader::getColor((Scene*)this, x, y, 0, 0, 0);
 }
 
 Intersection Scene::getFirstIntersection(Ray &ray) {

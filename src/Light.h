@@ -14,8 +14,6 @@ namespace Objects {
 		Light(const Light &other);
 
 		void setPosition(glm::vec3 position);
-
-		void print();
 	};
 }
 

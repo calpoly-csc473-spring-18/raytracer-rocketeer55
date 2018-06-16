@@ -44,10 +44,6 @@ std::string Box::type() {
 	return "Box";
 }
 
-void Box::print() {
-	std::cout << "Not printint boxes -- ayyyyyyylmao" << std::endl;
-}
-
 float Box::getFirstCollision(Ray &ray) {
 	float t_xMin, t_xMax;
 	float t_yMin, t_yMax;
@@ -128,4 +124,5 @@ void Box::calculateBoundingBox() {
 
 
 void Box::setPosition(glm::vec3 position) {}
+
 glm::vec3 Box::getPosition() {return glm::vec3();}

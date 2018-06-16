@@ -12,7 +12,7 @@ namespace Objects {
 		Box(const Box &other);
 
 		std::string type();
-		void print();
+		
 		float getFirstCollision(Ray &ray);
 		glm::vec3 getNormal(glm::vec3 point);
 

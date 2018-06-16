@@ -13,7 +13,7 @@ namespace Objects {
 		Triangle(const Triangle &other);
 
 		std::string type();
-		void print();
+		
 		float getFirstCollision(Ray &ray);
 		glm::vec3 getNormal(glm::vec3 point);
 

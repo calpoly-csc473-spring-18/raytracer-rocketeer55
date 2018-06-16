@@ -45,19 +45,6 @@ std::string Triangle::type() {
 	return "Triangle";
 }
 
-void Triangle::print() {
-	std::cout << "- Type: Triangle" << std::endl;
-	std::cout << "- Point A: {" << a.x << " " << a.y << " " << a.z << "}" << std::endl;
-	std::cout << "- Point B: {" << b.x << " " << b.y << " " << b.z << "}" << std::endl;
-	std::cout << "- Point C: {" << c.x << " " << c.y << " " << c.z << "}" << std::endl;
-	std::cout << "- Color: {";
-	pigment.print();
-	std::cout << "}" << std::endl;
-	std::cout << "- Material " << std::endl;
-	std::cout << "  - Ambient: " << finish.ambient << std::endl;
-	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
-}
-
 float Triangle::getFirstCollision(Ray &ray) {
 	// NEED TO OPTIMIZE
 	
@@ -133,4 +120,5 @@ void Triangle::calculateBoundingBox() {
 }
 
 void Triangle::setPosition(glm::vec3 position) {}
+
 glm::vec3 Triangle::getPosition() {return glm::vec3();}

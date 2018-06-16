@@ -26,12 +26,3 @@ Pigment::Pigment(float _r, float _g, float _b, float _f) {
 	b = _b;
 	f = _f;
 }
-
-void Pigment::print() {
-	if (isRGB) {
-		std::cout << r << " " << g << " " << b;
-	}
-	else {
-		std::cout << r << " " << g << " " << b << " " << f;
-	}
-}

@@ -43,18 +43,6 @@ std::string Plane::type() {
 	return "Plane";
 }
 
-void Plane::print() {
-	std::cout << "- Type: Plane" << std::endl;
-	std::cout << "- Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << std::endl;
-	std::cout << "- Distance: " << distance << std::endl;
-	std::cout << "- Color: {";
-	pigment.print();
-	std::cout << "}" << std::endl;
-	std::cout << "- Material: " << std::endl;
-	std::cout << "  - Ambient: " << finish.ambient << std::endl;
-	std::cout << "  - Diffuse: " << finish.diffuse << std::endl;
-}
-
 float Plane::getFirstCollision(Ray &ray) {
 	float t = (distance - glm::dot(ray.origin, normal)) / glm::dot(ray.d, normal);
 	if (t < 0) {
@@ -72,6 +60,6 @@ void Plane::calculateBoundingBox() {
 	boundingBox = BoundingBox();
 }
 
-
 void Plane::setPosition(glm::vec3 position) {}
+
 glm::vec3 Plane::getPosition() {return glm::vec3();}

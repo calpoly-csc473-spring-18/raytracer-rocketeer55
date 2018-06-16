@@ -12,8 +12,6 @@ namespace Objects {
 		Camera(const Camera &other);
 
 		void setPosition(glm::vec3 position);
-		
-		void print();
 	};
 }
 
